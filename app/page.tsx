@@ -204,7 +204,7 @@ export default function MainPage() {
               初期設定を開始
             </a>
             <a
-              href="/admin"
+              href="/login"
               className="inline-block w-full border border-slate-300 text-slate-700 font-semibold py-3 px-6 rounded-xl hover:bg-slate-50 transition-colors duration-200"
             >
               管理者ログイン
@@ -250,11 +250,11 @@ export default function MainPage() {
 
             {/* 管理者ログインボタン */}
             <a 
-              href="/admin" 
+              href="/login" 
               className="flex items-center space-x-1 sm:space-x-2 px-2 py-2 sm:px-4 text-slate-600 hover:text-slate-800 hover:bg-slate-50 rounded-xl transition-all duration-200 min-w-[44px] min-h-[44px]"
             >
               <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline text-sm">管理者</span>
+              <span className="hidden sm:inline text-sm">管理者ログイン</span>
             </a>
           </div>
         </div>
