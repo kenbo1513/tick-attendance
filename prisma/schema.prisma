@@ -1,0 +1,211 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ユーザー（従業員）モデル
+model User {
+  id            String       @id @default(cuid())
+  employeeId    String       @unique // 社員番号
+  name          String       // 氏名
+  email         String?      @unique // メールアドレス
+  emailVerified DateTime?
+  image         String?      // プロフィール画像
+  department    String       // 部署
+  position      String       // 役職
+  hourlyWage    Float        // 時給
+  monthlySalary Float        // 月給
+  isAdmin       Boolean      @default(false) // 管理者フラグ
+  isActive      Boolean      @default(true)  // 在職フラグ
+  hireDate      DateTime     // 入社日
+  accounts      Account[]
+  sessions      Session[]
+  timeRecords   TimeRecord[]
+  timeCorrections TimeCorrection[]
+  leaveRequests LeaveRequest[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@map("users")
+}
+
+// NextAuth.js関連モデル
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// 勤怠記録モデル
+model TimeRecord {
+  id          String   @id @default(cuid())
+  userId      String
+  date        DateTime // 勤務日
+  clockIn     DateTime? // 出勤時刻
+  clockOut    DateTime? // 退勤時刻
+  breakStart  DateTime? // 休憩開始時刻
+  breakEnd    DateTime? // 休憩終了時刻
+  totalWorkHours Float? // 総勤務時間（時間）
+  totalBreakHours Float? // 総休憩時間（時間）
+  netWorkHours Float? // 実働時間（時間）
+  
+  // 位置情報
+  clockInLatitude  Float? // 出勤時の緯度
+  clockInLongitude Float? // 出勤時の経度
+  clockOutLatitude Float? // 退勤時の緯度
+  clockOutLongitude Float? // 退勤時の経度
+  
+  // IP情報
+  clockInIP  String? // 出勤時のIPアドレス
+  clockOutIP String? // 退勤時のIPアドレス
+  
+  // デバイス情報
+  deviceInfo String? // デバイス情報
+  
+  // 備考
+  notes      String? // 備考
+  
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@map("time_records")
+}
+
+// 打刻修正申請モデル
+model TimeCorrection {
+  id          String   @id @default(cuid())
+  userId      String
+  date        DateTime // 修正対象日
+  recordType  String   // 修正対象（clockIn, clockOut, breakStart, breakEnd）
+  currentTime DateTime // 現在の時刻
+  requestedTime DateTime // 申請時刻
+  reason      String   // 修正理由
+  status      String   @default("pending") // ステータス（pending, approved, rejected）
+  approvedBy  String?  // 承認者ID
+  approvedAt  DateTime? // 承認日時
+  rejectionReason String? // 却下理由
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("time_corrections")
+}
+
+// 有給申請モデル
+model LeaveRequest {
+  id          String   @id @default(cuid())
+  userId      String
+  leaveType   String   // 有給種別（annual, sick, special, etc.）
+  startDate   DateTime // 開始日
+  endDate     DateTime // 終了日
+  days        Float    // 申請日数
+  reason      String   // 申請理由
+  status      String   @default("pending") // ステータス（pending, approved, rejected）
+  approvedBy  String?  // 承認者ID
+  approvedAt  DateTime? // 承認日時
+  rejectionReason String? // 却下理由
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("leave_requests")
+}
+
+// システム設定モデル
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique // 設定キー
+  value       String   // 設定値
+  description String?  // 設定の説明
+  category    String   // 設定カテゴリ
+  isActive    Boolean  @default(true) // 有効フラグ
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+// 勤務時間設定モデル
+model WorkSchedule {
+  id          String   @id @default(cuid())
+  name        String   // スケジュール名
+  startTime   String   // 開始時刻（HH:MM）
+  endTime     String   // 終了時刻（HH:MM）
+  breakStart  String   // 休憩開始時刻（HH:MM）
+  breakEnd    String   // 休憩終了時刻（HH:MM）
+  isDefault   Boolean  @default(false) // デフォルトスケジュール
+  isActive    Boolean  @default(true) // 有効フラグ
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("work_schedules")
+}
+
+// 部署モデル
+model Department {
+  id          String   @id @default(cuid())
+  name        String   @unique // 部署名
+  code        String   @unique // 部署コード
+  description String?  // 部署の説明
+  isActive    Boolean  @default(true) // 有効フラグ
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("departments")
+}
+
+// 役職モデル
+model Position {
+  id          String   @id @default(cuid())
+  name        String   @unique // 役職名
+  code        String   @unique // 役職コード
+  level       Int      // 役職レベル
+  description String?  // 役職の説明
+  isActive    Boolean  @default(true) // 有効フラグ
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("positions")
+}
+
