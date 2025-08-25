@@ -50,7 +50,7 @@ interface CompanySettings {
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'overview' | 'employees' | 'attendance' | 'company' | 'salary'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'employees' | 'attendance' | 'company' | 'salary' | 'terminal'>('overview');
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [timeRecords, setTimeRecords] = useState<TimeRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -695,6 +695,15 @@ export default function AdminDashboardPage() {
                   <FileSpreadsheet className="w-4 h-4 lg:w-5 lg:h-5" />
                   <span>給与テンプレート</span>
                 </button>
+                <button
+                  onClick={() => setActiveTab('terminal')}
+                  className={`flex flex-col lg:flex-row items-center justify-center lg:justify-start space-y-1 lg:space-y-0 lg:space-x-3 px-3 lg:px-4 py-3 rounded-lg lg:rounded-xl transition-colors text-sm lg:text-base min-h-[44px] ${
+                    activeTab === 'terminal' ? 'bg-blue-100 text-blue-700' : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  <Clock className="w-4 h-4 lg:w-5 lg:h-5" />
+                  <span>共有端末</span>
+                </button>
               </div>
             </nav>
           </aside>
@@ -1219,6 +1228,115 @@ export default function AdminDashboardPage() {
                           <span className="w-6 h-6 bg-indigo-200 rounded-full flex items-center justify-center text-indigo-800 text-xs font-bold flex-shrink-0 mt-0.5">4</span>
                           <p>ダウンロードしたファイルをExcelやGoogleスプレッドシートで開いてご利用ください</p>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 共有端末タブ */}
+              {activeTab === 'terminal' && (
+                <div className="space-y-6">
+                  {/* 共有端末へのアクセス */}
+                  <div className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl p-6 sm:p-8 border border-white/20">
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <Clock className="w-10 h-10 text-blue-600" />
+                      </div>
+                      <h2 className="text-2xl font-bold text-slate-800 mb-4">共有端末</h2>
+                      <p className="text-slate-600 mb-6 max-w-2xl mx-auto">
+                        従業員が勤怠打刻を行う共有端末画面にアクセスできます。<br />
+                        出勤・退勤・休憩の打刻、今日の打刻履歴の確認が可能です。
+                      </p>
+                      
+                      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a
+                          href="/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl"
+                        >
+                          <Clock className="w-5 h-5" />
+                          <span>共有端末を開く</span>
+                        </a>
+                        
+                        <button
+                          onClick={() => {
+                            if (typeof window !== 'undefined') {
+                              window.open('/', '_blank');
+                            }
+                          }}
+                          className="inline-flex items-center justify-center space-x-2 border border-slate-300 text-slate-700 font-semibold py-3 px-6 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                        >
+                          <span>新しいタブで開く</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 使用方法ガイド */}
+                  <div className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl p-6 sm:p-8 border border-white/20">
+                    <h3 className="text-xl font-bold text-slate-800 mb-4">使用方法</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="font-semibold text-slate-800 mb-3">従業員向け</h4>
+                        <ul className="space-y-2 text-sm text-slate-600">
+                          <li className="flex items-start space-x-2">
+                            <span className="w-5 h-5 bg-blue-200 rounded-full flex items-center justify-center text-blue-800 text-xs font-bold flex-shrink-0 mt-0.5">1</span>
+                            <span>共有端末画面にアクセス</span>
+                          </li>
+                          <li className="flex items-start space-x-2">
+                            <span className="w-5 h-5 bg-blue-200 rounded-full flex items-center justify-center text-blue-800 text-xs font-bold flex-shrink-0 mt-0.5">2</span>
+                            <span>出勤・退勤・休憩のボタンをクリック</span>
+                          </li>
+                          <li className="flex items-start space-x-2">
+                            <span className="w-5 h-5 bg-blue-200 rounded-full flex items-center justify-center text-blue-800 text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+                            <span>社員番号を入力して打刻完了</span>
+                          </li>
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-semibold text-slate-800 mb-3">管理者向け</h4>
+                        <ul className="space-y-2 text-sm text-slate-600">
+                          <li className="flex items-start space-x-2">
+                            <span className="w-5 h-5 bg-green-200 rounded-full flex items-center justify-center text-green-800 text-xs font-bold flex-shrink-0 mt-0.5">1</span>
+                            <span>管理者画面で従業員を登録</span>
+                          </li>
+                          <li className="flex items-start space-x-2">
+                            <span className="w-5 h-5 bg-green-200 rounded-full flex items-center justify-center text-green-800 text-xs font-bold flex-shrink-0 mt-0.5">2</span>
+                            <span>勤怠データを確認・管理</span>
+                          </li>
+                          <li className="flex items-start space-x-2">
+                            <span className="w-5 h-5 bg-green-200 rounded-full flex items-center justify-center text-green-800 text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+                            <span>給与テンプレートでデータ出力</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 現在の状況 */}
+                  <div className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl p-6 sm:p-8 border border-white/20">
+                    <h3 className="text-xl font-bold text-slate-800 mb-4">現在の状況</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="text-center p-4 bg-slate-50 rounded-lg">
+                        <div className="text-2xl font-bold text-blue-600">{employees.length}</div>
+                        <div className="text-sm text-slate-600">登録従業員数</div>
+                      </div>
+                      <div className="text-center p-4 bg-slate-50 rounded-lg">
+                        <div className="text-2xl font-bold text-green-600">
+                          {timeRecords.filter(record => 
+                            record.date === new Date().toISOString().split('T')[0]
+                          ).length}
+                        </div>
+                        <div className="text-sm text-slate-600">今日の打刻数</div>
+                      </div>
+                      <div className="text-center p-4 bg-slate-50 rounded-lg">
+                        <div className="text-2xl font-bold text-purple-600">
+                          {companyInfo ? '設定済み' : '未設定'}
+                        </div>
+                        <div className="text-sm text-slate-600">システム状態</div>
                       </div>
                     </div>
                   </div>
