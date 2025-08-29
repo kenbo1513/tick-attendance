@@ -57,7 +57,7 @@ interface CompanySettings {
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'overview' | 'employees' | 'attendance' | 'company' | 'salary' | 'terminal'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'employees' | 'attendance' | 'company' | 'salary' | 'terminal' | 'employeeList'>('overview');
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [timeRecords, setTimeRecords] = useState<TimeRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -87,10 +87,7 @@ export default function AdminDashboardPage() {
     taxRate: 0.10,
   });
 
-  // 従業員詳細表示関連
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-  const [showEmployeeDetail, setShowEmployeeDetail] = useState(false);
-  const [employeeAttendanceData, setEmployeeAttendanceData] = useState<any[]>([]);
+
 
   // 認証チェックとデータ読み込み
   useEffect(() => {
@@ -218,48 +215,46 @@ export default function AdminDashboardPage() {
     }
   };
 
+  // 従業員の勤怠データを計算
+  const calculateEmployeeStats = (employeeId: string) => {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    
+    // 今月の勤怠記録を取得
+    const monthRecords = timeRecords.filter(record => {
+      const recordDate = new Date(record.date);
+      return record.employeeId === employeeId && 
+             recordDate.getMonth() === currentMonth && 
+             recordDate.getFullYear() === currentYear;
+    });
+    
+    // 出勤日数を計算
+    const attendanceDays = new Set(monthRecords.map(record => record.date)).size;
+    
+    // 労働時間を計算（今月の合計）
+    let totalWorkHours = 0;
+    monthRecords.forEach(record => {
+      if (record.type === 'clockIn' || record.type === 'clockOut') {
+        // 簡易的な時間計算（実際の運用ではより詳細な計算が必要）
+        totalWorkHours += 8; // 仮定：1日8時間
+      }
+    });
+    
+    return {
+      attendanceDays,
+      totalWorkHours,
+      totalRecords: monthRecords.length
+    };
+  };
+
   // 従業員の給与設定を編集
   const handleEditEmployeeSalary = (employee: Employee) => {
     // 給与設定編集モーダルを表示する処理
     alert(`${employee.name}の給与設定を編集します。\n\n時給: ${employee.hourlyWage || '未設定'}円\n基本給: ${employee.monthlySalary || '未設定'}円\n交通費: ${employee.transportationAllowance || '未設定'}円\n食事手当: ${employee.mealAllowance || '未設定'}円`);
   };
 
-  // 従業員クリック時の処理
-  const handleEmployeeClick = (employee: Employee) => {
-    setSelectedEmployee(employee);
-    setShowEmployeeDetail(true);
-    
-    // 従業員の勤怠データを取得（過去31日分）
-    const today = new Date();
-    const attendanceData = [];
-    
-    for (let i = 0; i < 31; i++) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      
-      // その日の勤怠記録を検索
-      const dayRecords = timeRecords.filter(record => 
-        record.employeeId === employee.id && record.date === dateStr
-      );
-      
-      if (dayRecords.length > 0) {
-        attendanceData.push({
-          date: dateStr,
-          records: dayRecords,
-          isPresent: dayRecords.some(record => record.type === 'clockIn')
-        });
-      } else {
-        attendanceData.push({
-          date: dateStr,
-          records: [],
-          isPresent: false
-        });
-      }
-    }
-    
-    setEmployeeAttendanceData(attendanceData);
-  };
+
 
   // 従業員追加
   const handleAddEmployee = () => {
@@ -776,6 +771,15 @@ export default function AdminDashboardPage() {
                   <Clock className="w-4 h-4 lg:w-5 lg:h-5" />
                   <span>共有端末</span>
                 </button>
+                <button
+                  onClick={() => setActiveTab('employeeList')}
+                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors text-sm font-medium ${
+                    activeTab === 'employeeList' ? 'bg-green-600 text-white' : 'text-green-100 hover:bg-green-700'
+                  }`}
+                >
+                  <Users className="w-5 h-5" />
+                  <span>従業員一覧</span>
+                </button>
               </div>
             </nav>
           </aside>
@@ -904,6 +908,130 @@ export default function AdminDashboardPage() {
                 </>
               )}
 
+              {/* 従業員一覧タブ */}
+              {activeTab === 'employeeList' && (
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-white/20">
+                  <h2 className="text-xl font-bold text-slate-800 mb-6">従業員一覧</h2>
+                  
+                  {employees.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Users className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-slate-600 mb-2">従業員が登録されていません</h3>
+                      <p className="text-slate-500 mb-6">社員管理タブで従業員を登録してください</p>
+                    </div>
+                  ) : (
+                    <>
+                      {/* PC表示（テーブル） */}
+                      <div className="hidden lg:block overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b border-slate-200">
+                              <th className="text-left py-3 px-4 font-semibold text-slate-700">氏名</th>
+                              <th className="text-left py-3 px-4 font-semibold text-slate-700">時給</th>
+                              <th className="text-left py-3 px-4 font-semibold text-slate-700">労働時間</th>
+                              <th className="text-left py-3 px-4 font-semibold text-slate-700">出勤日数</th>
+                              <th className="text-left py-3 px-4 font-semibold text-slate-700">部署</th>
+                              <th className="text-left py-3 px-4 font-semibold text-slate-700">役職</th>
+                              <th className="text-left py-3 px-4 font-semibold text-slate-700">基本給</th>
+                              <th className="text-left py-3 px-4 font-semibold text-slate-700">交通費</th>
+                              <th className="text-left py-3 px-4 font-semibold text-slate-700">食事手当</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {employees.map((employee) => {
+                              const stats = calculateEmployeeStats(employee.id);
+                              return (
+                                <tr key={employee.id} className="border-b border-slate-100 hover:bg-slate-50">
+                                  <td className="py-3 px-4 text-slate-800 font-medium">{employee.name}</td>
+                                  <td className="py-3 px-4 text-slate-800">{employee.hourlyWage || '-'}円</td>
+                                  <td className="py-3 px-4 text-slate-800">{stats.totalWorkHours}:00</td>
+                                  <td className="py-3 px-4 text-slate-800">{stats.attendanceDays}日</td>
+                                  <td className="py-3 px-4 text-slate-600">{employee.department}</td>
+                                  <td className="py-3 px-4 text-slate-600">{employee.position}</td>
+                                  <td className="py-3 px-4 text-slate-800">{employee.monthlySalary || '-'}円</td>
+                                  <td className="py-3 px-4 text-slate-800">{employee.transportationAllowance || '-'}円</td>
+                                  <td className="py-3 px-4 text-slate-800">{employee.mealAllowance || '-'}円</td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* モバイル表示（カード） */}
+                      <div className="lg:hidden space-y-4">
+                        {employees.map((employee) => {
+                          const stats = calculateEmployeeStats(employee.id);
+                          return (
+                            <div key={employee.id} className="bg-slate-50 rounded-lg p-4">
+                              <div className="flex items-center justify-between mb-3">
+                                <h3 className="text-lg font-semibold text-slate-800">{employee.name}</h3>
+                                <span className="text-sm text-slate-600">{employee.department} - {employee.position}</span>
+                              </div>
+                              <div className="grid grid-cols-2 gap-3 text-sm">
+                                <div>
+                                  <span className="text-slate-600">時給:</span>
+                                  <span className="ml-2 font-medium">{employee.hourlyWage || '-'}円</span>
+                                </div>
+                                <div>
+                                  <span className="text-slate-600">労働時間:</span>
+                                  <span className="ml-2 font-medium">{stats.totalWorkHours}:00</span>
+                                </div>
+                                <div>
+                                  <span className="text-slate-600">出勤日数:</span>
+                                  <span className="ml-2 font-medium">{stats.attendanceDays}日</span>
+                                </div>
+                                <div>
+                                  <span className="text-slate-600">基本給:</span>
+                                  <span className="ml-2 font-medium">{employee.monthlySalary || '-'}円</span>
+                                </div>
+                                <div>
+                                  <span className="text-slate-600">交通費:</span>
+                                  <span className="ml-2 font-medium">{employee.transportationAllowance || '-'}円</span>
+                                </div>
+                                <div>
+                                  <span className="text-slate-600">食事手当:</span>
+                                  <span className="ml-2 font-medium">{employee.mealAllowance || '-'}円</span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* 集計情報 */}
+                      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h3 className="text-lg font-semibold text-blue-800 mb-3">今月の集計</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-blue-600">{employees.length}</div>
+                            <div className="text-blue-600">総従業員数</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-green-600">
+                              {employees.reduce((total, emp) => total + calculateEmployeeStats(emp.id).attendanceDays, 0)}
+                            </div>
+                            <div className="text-green-600">総出勤日数</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-purple-600">
+                              {employees.reduce((total, emp) => total + calculateEmployeeStats(emp.id).totalWorkHours, 0)}:00
+                            </div>
+                            <div className="text-purple-600">総労働時間</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-orange-600">
+                              {employees.reduce((total, emp) => total + (emp.hourlyWage || 0), 0)}円
+                            </div>
+                            <div className="text-orange-600">平均時給</div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
               {/* 社員管理タブ */}
               {activeTab === 'employees' && (
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-white/20">
@@ -948,14 +1076,7 @@ export default function AdminDashboardPage() {
                             {employees.map((employee) => (
                               <tr key={employee.id} className="border-b border-slate-100 hover:bg-slate-50">
                                 <td className="py-3 px-4 text-slate-800">{employee.id}</td>
-                                <td className="py-3 px-4 text-slate-800">
-                                  <button
-                                    onClick={() => handleEmployeeClick(employee)}
-                                    className="text-blue-600 hover:text-blue-800 hover:underline font-medium cursor-pointer"
-                                  >
-                                    {employee.name}
-                                  </button>
-                                </td>
+                                <td className="py-3 px-4 text-slate-800">{employee.name}</td>
                                 <td className="py-3 px-4 text-slate-600">{employee.department}</td>
                                 <td className="py-3 px-4 text-slate-600">{employee.position}</td>
                               </tr>
@@ -1465,90 +1586,7 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
-      {/* 従業員詳細モーダル */}
-      {showEmployeeDetail && selectedEmployee && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-8 max-w-4xl mx-4 w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-slate-800">
-                {selectedEmployee.name} の勤怠詳細
-              </h3>
-              <button
-                onClick={() => setShowEmployeeDetail(false)}
-                className="text-slate-400 hover:text-slate-600"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
 
-            {/* 従業員情報 */}
-            <div className="bg-slate-50 rounded-lg p-4 mb-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <span className="text-slate-600">社員ID:</span>
-                  <span className="ml-2 font-medium">{selectedEmployee.id}</span>
-                </div>
-                <div>
-                  <span className="text-slate-600">部署:</span>
-                  <span className="ml-2 font-medium">{selectedEmployee.department}</span>
-                </div>
-                <div>
-                  <span className="text-slate-600">役職:</span>
-                  <span className="ml-2 font-medium">{selectedEmployee.position}</span>
-                </div>
-                <div>
-                  <span className="text-slate-600">時給:</span>
-                  <span className="ml-2 font-medium">{selectedEmployee.hourlyWage || '-'}円</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 勤怠データ（過去31日分） */}
-            <div className="space-y-4">
-              <h4 className="text-lg font-semibold text-slate-800">過去31日間の勤怠状況</h4>
-              <div className="grid grid-cols-7 gap-2 text-xs">
-                {employeeAttendanceData.map((dayData, index) => (
-                  <div
-                    key={dayData.date}
-                    className={`p-2 rounded-lg border text-center ${
-                      dayData.isPresent
-                        ? 'bg-green-100 border-green-200 text-green-800'
-                        : 'bg-slate-100 border-slate-200 text-slate-600'
-                    }`}
-                  >
-                    <div className="font-medium">
-                      {new Date(dayData.date).getDate()}
-                    </div>
-                    <div className="text-xs">
-                      {dayData.isPresent ? '出勤' : '未出勤'}
-                    </div>
-                    {dayData.records.length > 0 && (
-                      <div className="text-xs text-slate-500 mt-1">
-                        {dayData.records.length}件
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 給与設定ボタン */}
-            <div className="mt-6 text-center">
-              <button
-                onClick={() => {
-                  setShowEmployeeDetail(false);
-                  setActiveTab('salary');
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition-colors duration-200"
-              >
-                給与設定を編集
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
