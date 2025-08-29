@@ -232,21 +232,10 @@ export default function MainPage() {
               </div>
               <div className="hidden md:block">
                 <p className="text-sm sm:text-lg font-semibold text-slate-800">共有端末</p>
-                {companyInfo && (
-                  <div className="text-xs sm:text-sm text-slate-600">
-                    <span className="font-medium">{companyInfo.name}</span>
-                    <span className="ml-2 text-blue-600">{companyInfo.id}</span>
-                  </div>
-                )}
               </div>
             </div>
             
-            {/* 現在時刻 */}
-            <div className="text-center flex-1 mx-2 sm:mx-4">
-              <div className="text-2xl sm:text-4xl md:text-6xl font-bold text-slate-800 font-mono">
-                {currentTime}
-              </div>
-            </div>
+
 
             {/* 管理者ログインボタン */}
             <a 
@@ -262,41 +251,17 @@ export default function MainPage() {
 
       {/* メインコンテンツ */}
       <main className="max-w-6xl mx-auto px-3 py-4 sm:px-4 sm:py-8">
-        {/* 企業情報表示 */}
-        {companyInfo && (
-          <div className="mb-6 sm:mb-8">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 border border-white/20">
-              <div className="flex items-center space-x-3 mb-4">
-                <Building2 className="w-6 h-6 text-blue-600" />
-                <h2 className="text-lg font-bold text-slate-800">企業情報</h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="text-center sm:text-left">
-                  <p className="text-sm text-slate-600">企業ID</p>
-                  <p className="text-xl sm:text-2xl font-bold text-blue-600">{companyInfo.id}</p>
-                </div>
-                <div className="text-center sm:text-left">
-                  <p className="text-sm text-slate-600">会社名</p>
-                  <p className="text-lg sm:text-xl font-bold text-slate-800">{companyInfo.name}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* 今日の出勤状況サマリー */}
+
+        {/* 日付と時間の表示 */}
         <div className="mb-6 sm:mb-8">
           <div className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 border border-white/20">
-            <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
-              <div className="text-center">
-                <div className="text-2xl sm:text-3xl font-bold text-slate-800">
-                  {companyInfo ? '設定済み' : '-'}
-                </div>
-                <div className="text-sm text-slate-600">システム状態</div>
+            <div className="text-center">
+              <div className="text-4xl sm:text-6xl md:text-8xl font-bold text-slate-800 font-mono mb-4">
+                {currentTime}
               </div>
-              <div className="text-center">
-                <div className="text-2xl sm:text-3xl font-bold text-green-600">{presentCount}</div>
-                <div className="text-sm text-slate-600">今日の打刻数</div>
+              <div className="text-xl sm:text-2xl md:text-3xl font-semibold text-slate-600">
+                {currentDate}
               </div>
             </div>
           </div>
