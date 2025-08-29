@@ -595,7 +595,7 @@ export const addAttendanceRecord = (record: Omit<AttendanceRecord, 'id'>): boole
 };
 
 // 新しい社員の追加
-export const addEmployee = (employee: Omit<Employee, 'id'>): boolean => {
+export const addEmployee = (employee: Omit<Employee, 'id'>): Employee | null => {
   try {
     const employees = loadEmployeeData();
     
@@ -608,31 +608,17 @@ export const addEmployee = (employee: Omit<Employee, 'id'>): boolean => {
     employees.push(newEmployee);
     saveEmployeeData(employees);
     console.log('新しい社員を追加しました');
-    return true;
+    return newEmployee;
   } catch (error) {
     console.error('社員追加エラー:', error);
-    return false;
+    return null;
   }
 };
 
-// 社員データの更新
-export const updateEmployee = (id: string, updates: Partial<Employee>): void => {
-  try {
-    const employees = loadEmployeeData();
-    const index = employees.findIndex(emp => emp.id === id);
-    
-    if (index !== -1) {
-      employees[index] = { ...employees[index], ...updates };
-      saveEmployeeData(employees);
-      console.log('社員データを更新しました');
-    }
-  } catch (error) {
-    console.error('社員データ更新エラー:', error);
-  }
-};
+
 
 // 社員データの削除
-export const deleteEmployee = (id: string): void => {
+export const deleteEmployee = (id: string): boolean => {
   try {
     const employees = loadEmployeeData();
     const filteredEmployees = employees.filter(emp => emp.id !== id);
@@ -640,9 +626,41 @@ export const deleteEmployee = (id: string): void => {
     if (filteredEmployees.length !== employees.length) {
       saveEmployeeData(filteredEmployees);
       console.log('社員データを削除しました');
+      return true;
     }
+    return false;
   } catch (error) {
     console.error('社員データ削除エラー:', error);
+    return false;
+  }
+};
+
+// 全従業員データを取得
+export const getEmployees = (): Employee[] => {
+  try {
+    return loadEmployeeData();
+  } catch (error) {
+    console.error('従業員データ取得エラー:', error);
+    return [];
+  }
+};
+
+// 従業員データを更新（Employeeオブジェクト全体を受け取る）
+export const updateEmployee = (employee: Employee): boolean => {
+  try {
+    const employees = loadEmployeeData();
+    const index = employees.findIndex(emp => emp.id === employee.id);
+    
+    if (index !== -1) {
+      employees[index] = employee;
+      saveEmployeeData(employees);
+      console.log('社員データを更新しました');
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('社員データ更新エラー:', error);
+    return false;
   }
 };
 

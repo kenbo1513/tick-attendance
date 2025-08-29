@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock, Users, UserCheck, UserX, BarChart3, Calendar, LogOut, Building2, Plus, Settings, CheckCircle, FileSpreadsheet } from 'lucide-react';
+import EmployeeManagement from './components/EmployeeManagement';
 import * as XLSX from 'xlsx';
 import { 
   checkAdminSession, 
@@ -1050,72 +1051,7 @@ export default function AdminDashboardPage() {
               {/* 社員管理タブ */}
               {activeTab === 'employees' && (
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-white/20">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-slate-800">社員一覧</h2>
-                    <button
-                      onClick={() => setShowAddEmployeeModal(true)}
-                      className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-colors duration-200"
-                    >
-                      <Plus className="w-4 h-4" />
-                      <span>従業員追加</span>
-                    </button>
-                  </div>
-                  
-                  {employees.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Users className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-slate-600 mb-2">従業員が登録されていません</h3>
-                      <p className="text-slate-500 mb-6">最初の従業員を登録してください</p>
-                      <button
-                        onClick={() => setShowAddEmployeeModal(true)}
-                        className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition-colors duration-200"
-                      >
-                        <Plus className="w-4 h-4" />
-                        <span>従業員を追加</span>
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      {/* PC表示（テーブル） */}
-                      <div className="hidden lg:block overflow-x-auto">
-                        <table className="w-full">
-                          <thead>
-                            <tr className="border-b border-slate-200">
-                              <th className="text-left py-3 px-4 font-semibold text-slate-700">社員ID</th>
-                              <th className="text-left py-3 px-4 font-semibold text-slate-700">氏名</th>
-                              <th className="text-left py-3 px-4 font-semibold text-slate-700">部署</th>
-                              <th className="text-left py-3 px-4 font-semibold text-slate-700">役職</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {employees.map((employee) => (
-                              <tr key={employee.id} className="border-b border-slate-100 hover:bg-slate-50">
-                                <td className="py-3 px-4 text-slate-800">{employee.id}</td>
-                                <td className="py-3 px-4 text-slate-800">{employee.name}</td>
-                                <td className="py-3 px-4 text-slate-600">{employee.department}</td>
-                                <td className="py-3 px-4 text-slate-600">{employee.position}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-
-                      {/* モバイル表示（カード） */}
-                      <div className="lg:hidden space-y-3">
-                        {employees.map((employee) => (
-                          <div key={employee.id} className="bg-slate-50 rounded-xl p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="font-semibold text-slate-800">{employee.name}</span>
-                              <span className="text-sm text-slate-500">{employee.id}</span>
-                            </div>
-                            <div className="text-sm text-slate-600">
-                              {employee.department} - {employee.position}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
+                  <EmployeeManagement />
                 </div>
               )}
 
