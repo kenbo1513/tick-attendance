@@ -18,6 +18,13 @@ interface Employee {
   name: string;
   department: string;
   position: string;
+  hourlyWage?: number;
+  monthlySalary?: number;
+  transportationAllowance?: number;
+  mealAllowance?: number;
+  overtimeRate?: number;
+  nightShiftRate?: number;
+  holidayRate?: number;
 }
 
 interface TimeRecord {
@@ -79,6 +86,11 @@ export default function AdminDashboardPage() {
     socialInsuranceRate: 0.15,
     taxRate: 0.10,
   });
+
+  // 従業員詳細表示関連
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [showEmployeeDetail, setShowEmployeeDetail] = useState(false);
+  const [employeeAttendanceData, setEmployeeAttendanceData] = useState<any[]>([]);
 
   // 認証チェックとデータ読み込み
   useEffect(() => {
@@ -206,6 +218,49 @@ export default function AdminDashboardPage() {
     }
   };
 
+  // 従業員の給与設定を編集
+  const handleEditEmployeeSalary = (employee: Employee) => {
+    // 給与設定編集モーダルを表示する処理
+    alert(`${employee.name}の給与設定を編集します。\n\n時給: ${employee.hourlyWage || '未設定'}円\n基本給: ${employee.monthlySalary || '未設定'}円\n交通費: ${employee.transportationAllowance || '未設定'}円\n食事手当: ${employee.mealAllowance || '未設定'}円`);
+  };
+
+  // 従業員クリック時の処理
+  const handleEmployeeClick = (employee: Employee) => {
+    setSelectedEmployee(employee);
+    setShowEmployeeDetail(true);
+    
+    // 従業員の勤怠データを取得（過去31日分）
+    const today = new Date();
+    const attendanceData = [];
+    
+    for (let i = 0; i < 31; i++) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      
+      // その日の勤怠記録を検索
+      const dayRecords = timeRecords.filter(record => 
+        record.employeeId === employee.id && record.date === dateStr
+      );
+      
+      if (dayRecords.length > 0) {
+        attendanceData.push({
+          date: dateStr,
+          records: dayRecords,
+          isPresent: dayRecords.some(record => record.type === 'clockIn')
+        });
+      } else {
+        attendanceData.push({
+          date: dateStr,
+          records: [],
+          isPresent: false
+        });
+      }
+    }
+    
+    setEmployeeAttendanceData(attendanceData);
+  };
+
   // 従業員追加
   const handleAddEmployee = () => {
     if (!newEmployee.name.trim() || !newEmployee.department.trim() || !newEmployee.position.trim()) {
@@ -224,7 +279,14 @@ export default function AdminDashboardPage() {
       id: employeeId,
       name: newEmployee.name.trim(),
       department: newEmployee.department.trim(),
-      position: newEmployee.position.trim()
+      position: newEmployee.position.trim(),
+      hourlyWage: 1000,
+      monthlySalary: 200000,
+      transportationAllowance: 10000,
+      mealAllowance: 6000,
+      overtimeRate: 1.25,
+      nightShiftRate: 1.35,
+      holidayRate: 1.5
     };
 
     const updatedEmployees = [...employees, newEmp];
@@ -886,7 +948,14 @@ export default function AdminDashboardPage() {
                             {employees.map((employee) => (
                               <tr key={employee.id} className="border-b border-slate-100 hover:bg-slate-50">
                                 <td className="py-3 px-4 text-slate-800">{employee.id}</td>
-                                <td className="py-3 px-4 text-slate-800">{employee.name}</td>
+                                <td className="py-3 px-4 text-slate-800">
+                                  <button
+                                    onClick={() => handleEmployeeClick(employee)}
+                                    className="text-blue-600 hover:text-blue-800 hover:underline font-medium cursor-pointer"
+                                  >
+                                    {employee.name}
+                                  </button>
+                                </td>
                                 <td className="py-3 px-4 text-slate-600">{employee.department}</td>
                                 <td className="py-3 px-4 text-slate-600">{employee.position}</td>
                               </tr>
@@ -1130,91 +1199,48 @@ export default function AdminDashboardPage() {
                       </div>
                     </div>
 
-                    {/* 給与設定 */}
+                    {/* 従業員別給与設定 */}
                     <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-                      <h3 className="text-lg font-semibold text-yellow-800 mb-4">給与設定</h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-yellow-700 mb-2">基本給（円）</label>
-                          <input
-                            type="number"
-                            value={salarySettings.baseSalary}
-                            onChange={(e) => setSalarySettings({ ...salarySettings, baseSalary: parseInt(e.target.value) || 0 })}
-                            className="w-full px-4 py-3 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                            placeholder="200000"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-yellow-700 mb-2">時給（円）</label>
-                          <input
-                            type="number"
-                            value={salarySettings.hourlyWage}
-                            onChange={(e) => setSalarySettings({ ...salarySettings, hourlyWage: parseInt(e.target.value) || 0 })}
-                            className="w-full px-4 py-3 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                            placeholder="1000"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-yellow-700 mb-2">残業倍率</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={salarySettings.overtimeRate}
-                            onChange={(e) => setSalarySettings({ ...salarySettings, overtimeRate: parseFloat(e.target.value) || 1.25 })}
-                            className="w-full px-4 py-3 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                            placeholder="1.25"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-yellow-700 mb-2">交通費（円）</label>
-                          <input
-                            type="number"
-                            value={salarySettings.transportationAllowance}
-                            onChange={(e) => setSalarySettings({ ...salarySettings, transportationAllowance: parseInt(e.target.value) || 0 })}
-                            className="w-full px-4 py-3 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                            placeholder="15000"
-                          />
-                        </div>
-                        <div>
-                          <label className="label text-sm font-medium text-yellow-700 mb-2">食事手当（円）</label>
-                          <input
-                            type="number"
-                            value={salarySettings.mealAllowance}
-                            onChange={(e) => setSalarySettings({ ...salarySettings, mealAllowance: parseInt(e.target.value) || 0 })}
-                            className="w-full px-4 py-3 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                            placeholder="10000"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-yellow-700 mb-2">社会保険料率</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={salarySettings.socialInsuranceRate}
-                            onChange={(e) => setSalarySettings({ ...salarySettings, socialInsuranceRate: parseFloat(e.target.value) || 0.15 })}
-                            className="w-full px-4 py-3 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                            placeholder="0.15"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-yellow-700 mb-2">所得税率</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={salarySettings.taxRate}
-                            onChange={(e) => setSalarySettings({ ...salarySettings, taxRate: parseFloat(e.target.value) || 0.10 })}
-                            className="w-full px-4 py-3 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                            placeholder="0.10"
-                          />
-                        </div>
-                      </div>
-                      <div className="mt-4 flex justify-end">
-                        <button
-                          onClick={handleSaveSalarySettings}
-                          className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-xl transition-colors duration-200"
-                        >
-                          設定を保存
-                        </button>
+                      <h3 className="text-lg font-semibold text-yellow-800 mb-4">従業員別給与設定</h3>
+                      <p className="text-sm text-yellow-700 mb-4">
+                        各従業員の給与設定を個別に管理できます。時給、交通費、各種手当の設定が可能です。
+                      </p>
+                      
+                      <div className="space-y-4">
+                        {employees.map((employee) => (
+                          <div key={employee.id} className="bg-white rounded-lg p-4 border border-yellow-200">
+                            <div className="flex items-center justify-between mb-3">
+                              <h4 className="font-semibold text-slate-800">
+                                {employee.name} ({employee.department} - {employee.position})
+                              </h4>
+                              <button
+                                onClick={() => handleEditEmployeeSalary(employee)}
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm transition-colors duration-200"
+                              >
+                                編集
+                              </button>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                              <div>
+                                <span className="text-slate-600">時給:</span>
+                                <span className="ml-2 font-medium">{employee.hourlyWage || '-'}円</span>
+                              </div>
+                              <div>
+                                <span className="text-slate-600">基本給:</span>
+                                <span className="ml-2 font-medium">{employee.monthlySalary || '-'}円</span>
+                              </div>
+                              <div>
+                                <span className="text-slate-600">交通費:</span>
+                                <span className="ml-2 font-medium">{employee.transportationAllowance || '-'}円</span>
+                              </div>
+                              <div>
+                                <span className="text-slate-600">食事手当:</span>
+                                <span className="ml-2 font-medium">{employee.mealAllowance || '-'}円</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
 
@@ -1433,6 +1459,91 @@ export default function AdminDashboardPage() {
                 className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200"
               >
                 保存
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 従業員詳細モーダル */}
+      {showEmployeeDetail && selectedEmployee && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-4xl mx-4 w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-slate-800">
+                {selectedEmployee.name} の勤怠詳細
+              </h3>
+              <button
+                onClick={() => setShowEmployeeDetail(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* 従業員情報 */}
+            <div className="bg-slate-50 rounded-lg p-4 mb-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span className="text-slate-600">社員ID:</span>
+                  <span className="ml-2 font-medium">{selectedEmployee.id}</span>
+                </div>
+                <div>
+                  <span className="text-slate-600">部署:</span>
+                  <span className="ml-2 font-medium">{selectedEmployee.department}</span>
+                </div>
+                <div>
+                  <span className="text-slate-600">役職:</span>
+                  <span className="ml-2 font-medium">{selectedEmployee.position}</span>
+                </div>
+                <div>
+                  <span className="text-slate-600">時給:</span>
+                  <span className="ml-2 font-medium">{selectedEmployee.hourlyWage || '-'}円</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 勤怠データ（過去31日分） */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold text-slate-800">過去31日間の勤怠状況</h4>
+              <div className="grid grid-cols-7 gap-2 text-xs">
+                {employeeAttendanceData.map((dayData, index) => (
+                  <div
+                    key={dayData.date}
+                    className={`p-2 rounded-lg border text-center ${
+                      dayData.isPresent
+                        ? 'bg-green-100 border-green-200 text-green-800'
+                        : 'bg-slate-100 border-slate-200 text-slate-600'
+                    }`}
+                  >
+                    <div className="font-medium">
+                      {new Date(dayData.date).getDate()}
+                    </div>
+                    <div className="text-xs">
+                      {dayData.isPresent ? '出勤' : '未出勤'}
+                    </div>
+                    {dayData.records.length > 0 && (
+                      <div className="text-xs text-slate-500 mt-1">
+                        {dayData.records.length}件
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 給与設定ボタン */}
+            <div className="mt-6 text-center">
+              <button
+                onClick={() => {
+                  setShowEmployeeDetail(false);
+                  setActiveTab('salary');
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition-colors duration-200"
+              >
+                給与設定を編集
               </button>
             </div>
           </div>

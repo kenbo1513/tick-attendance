@@ -6,6 +6,11 @@ export interface Employee {
   position: string;
   hourlyWage?: number;
   monthlySalary?: number;
+  transportationAllowance?: number; // 交通費
+  mealAllowance?: number; // 食事手当
+  overtimeRate?: number; // 残業倍率
+  nightShiftRate?: number; // 夜勤手当倍率
+  holidayRate?: number; // 休日出勤倍率
   isAdmin?: boolean;
   isActive?: boolean;
   hireDate?: string;
@@ -48,6 +53,11 @@ const DEFAULT_EMPLOYEES: Employee[] = [
     position: '主任',
     hourlyWage: 1200,
     monthlySalary: 250000,
+    transportationAllowance: 15000,
+    mealAllowance: 8000,
+    overtimeRate: 1.25,
+    nightShiftRate: 1.35,
+    holidayRate: 1.5,
     isAdmin: false,
     isActive: true,
     hireDate: '2020-04-01'
@@ -59,6 +69,11 @@ const DEFAULT_EMPLOYEES: Employee[] = [
     position: '課長',
     hourlyWage: 1500,
     monthlySalary: 350000,
+    transportationAllowance: 20000,
+    mealAllowance: 10000,
+    overtimeRate: 1.25,
+    nightShiftRate: 1.35,
+    holidayRate: 1.5,
     isAdmin: true,
     isActive: true,
     hireDate: '2018-04-01'
@@ -70,6 +85,11 @@ const DEFAULT_EMPLOYEES: Employee[] = [
     position: 'エンジニア',
     hourlyWage: 1300,
     monthlySalary: 280000,
+    transportationAllowance: 12000,
+    mealAllowance: 8000,
+    overtimeRate: 1.25,
+    nightShiftRate: 1.35,
+    holidayRate: 1.5,
     isAdmin: false,
     isActive: true,
     hireDate: '2021-04-01'
@@ -81,6 +101,11 @@ const DEFAULT_EMPLOYEES: Employee[] = [
     position: 'マネージャー',
     hourlyWage: 1800,
     monthlySalary: 400000,
+    transportationAllowance: 25000,
+    mealAllowance: 12000,
+    overtimeRate: 1.25,
+    nightShiftRate: 1.35,
+    holidayRate: 1.5,
     isAdmin: false,
     isActive: true,
     hireDate: '2015-04-01'
@@ -92,6 +117,11 @@ const DEFAULT_EMPLOYEES: Employee[] = [
     position: '担当者',
     hourlyWage: 1100,
     monthlySalary: 230000,
+    transportationAllowance: 10000,
+    mealAllowance: 6000,
+    overtimeRate: 1.25,
+    nightShiftRate: 1.35,
+    holidayRate: 1.5,
     isAdmin: false,
     isActive: true,
     hireDate: '2022-04-01'
@@ -1039,6 +1069,61 @@ export const repairData = (): void => {
     }
   } catch (error) {
     console.error('データ修復エラー:', error);
+  }
+};
+
+// 従業員の給与設定を更新
+export const updateEmployeeSalarySettings = (
+  employeeId: string, 
+  settings: Partial<Pick<Employee, 'hourlyWage' | 'monthlySalary' | 'transportationAllowance' | 'mealAllowance' | 'overtimeRate' | 'nightShiftRate' | 'holidayRate'>>
+): boolean => {
+  try {
+    const data = loadAppData();
+    const employeeIndex = data.employees.findIndex(emp => emp.id === employeeId);
+    
+    if (employeeIndex === -1) {
+      console.error(`従業員が見つかりません: ${employeeId}`);
+      return false;
+    }
+    
+    // 給与設定を更新
+    data.employees[employeeIndex] = {
+      ...data.employees[employeeIndex],
+      ...settings
+    };
+    
+    // データを保存
+    saveAppData(data);
+    console.log(`従業員 ${employeeId} の給与設定を更新しました`);
+    return true;
+  } catch (error) {
+    console.error('給与設定の更新エラー:', error);
+    return false;
+  }
+};
+
+// 従業員の給与設定を取得
+export const getEmployeeSalarySettings = (employeeId: string): Partial<Employee> | null => {
+  try {
+    const data = loadAppData();
+    const employee = data.employees.find(emp => emp.id === employeeId);
+    
+    if (!employee) {
+      return null;
+    }
+    
+    return {
+      hourlyWage: employee.hourlyWage,
+      monthlySalary: employee.monthlySalary,
+      transportationAllowance: employee.transportationAllowance,
+      mealAllowance: employee.mealAllowance,
+      overtimeRate: employee.overtimeRate,
+      nightShiftRate: employee.nightShiftRate,
+      holidayRate: employee.holidayRate
+    };
+  } catch (error) {
+    console.error('給与設定の取得エラー:', error);
+    return null;
   }
 };
 
