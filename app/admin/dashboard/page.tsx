@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock, Users, UserCheck, UserX, BarChart3, Calendar, LogOut, Building2, Plus, Settings, CheckCircle, FileSpreadsheet } from 'lucide-react';
 import EmployeeManagement from './components/EmployeeManagement';
+import AttendanceManagement from './components/AttendanceManagement';
 import * as XLSX from 'xlsx';
 import { 
   checkAdminSession, 
@@ -1058,61 +1059,7 @@ export default function AdminDashboardPage() {
               {/* 勤怠管理タブ */}
               {activeTab === 'attendance' && (
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-white/20">
-                  <h2 className="text-xl font-bold text-slate-800 mb-4">今日の打刻記録</h2>
-                  
-                  {todayRecords.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Calendar className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                      <p className="text-slate-500">今日の打刻記録はありません</p>
-                    </div>
-                  ) : (
-                    <>
-                      {/* PC表示（テーブル） */}
-                      <div className="hidden lg:block overflow-x-auto">
-                        <table className="w-full">
-                          <thead>
-                            <tr className="border-b border-slate-200">
-                              <th className="text-left py-3 px-4 font-semibold text-slate-700">社員名</th>
-                              <th className="text-left py-3 px-4 font-semibold text-slate-700">打刻種別</th>
-                              <th className="text-left py-3 px-4 font-semibold text-slate-700">時刻</th>
-                              <th className="text-left py-3 px-4 font-semibold text-slate-700">日付</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {todayRecords.map((record) => (
-                              <tr key={record.id} className="border-b border-slate-100 hover:bg-slate-50">
-                                <td className="py-3 px-4 text-slate-800">{record.employeeName}</td>
-                                <td className="py-3 px-4 text-slate-800">
-                                  {record.type === 'clockIn' ? '出勤' : 
-                                   record.type === 'clockOut' ? '退勤' : 
-                                   record.type === 'breakStart' ? '休憩開始' : '休憩終了'}
-                                </td>
-                                <td className="py-3 px-4 text-slate-600">{record.time}</td>
-                                <td className="py-3 px-4 text-slate-600">{record.date}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-
-                      {/* モバイル表示（カード） */}
-                      <div className="lg:hidden space-y-3">
-                        {todayRecords.map((record) => (
-                          <div key={record.id} className="bg-slate-50 rounded-xl p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="font-semibold text-slate-800">{record.employeeName}</span>
-                              <span className="text-sm text-slate-500">{record.time}</span>
-                            </div>
-                            <div className="text-sm text-slate-600">
-                              {record.type === 'clockIn' ? '出勤' : 
-                               record.type === 'clockOut' ? '退勤' : 
-                               record.type === 'breakStart' ? '休憩開始' : '休憩終了'}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
+                  <AttendanceManagement />
                 </div>
               )}
 

@@ -1,4 +1,5 @@
 // 給与計算とExcel/Googleスプレッドシート連携ユーティリティ
+import { TimeRecord } from './localStorage';
 
 export interface SalarySettings {
   companyId: string;
@@ -35,14 +36,7 @@ export interface EmployeeSalary {
   netSalary: number;
 }
 
-export interface TimeRecord {
-  id: string;
-  employeeId: string;
-  employeeName: string;
-  type: 'clockIn' | 'clockOut' | 'breakStart' | 'breakEnd';
-  time: string;
-  date: string;
-}
+
 
 export interface Employee {
   id: string;

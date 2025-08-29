@@ -32,6 +32,20 @@ export interface AttendanceRecord {
   notes?: string;
 }
 
+// 勤務記録の型定義
+export interface TimeRecord {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  type: 'clockIn' | 'clockOut' | 'breakStart' | 'breakEnd';
+  time: string;
+  date: string;
+  location?: string;
+  ipAddress?: string;
+  deviceInfo?: string;
+  notes?: string;
+}
+
 // 統合データの型定義
 export interface AppData {
   employees: Employee[];
