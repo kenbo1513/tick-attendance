@@ -708,84 +708,99 @@ export default function AdminDashboardPage() {
             </div>
           </div>
         </div>
-      </header>
+              </header>
 
-      {/* メインコンテンツ */}
-      <div className="max-w-7xl mx-auto px-3 py-4 sm:px-4 sm:py-8">
-        <div className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-8">
-          {/* サイドバー */}
-          <aside className="w-full lg:w-64 flex-shrink-0">
-            <nav className="bg-green-800 rounded-xl lg:rounded-2xl shadow-xl p-4 lg:p-6">
-              <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:gap-2">
-                <button
-                  onClick={() => setActiveTab('overview')}
-                                      className={`flex flex-col lg:flex-row items-center justify-center lg:justify-start space-y-1 lg:space-y-0 lg:space-x-3 px-3 lg:px-4 py-3 rounded-lg lg:rounded-xl transition-colors text-sm lg:text-base min-h-[44px] ${
-                      activeTab === 'overview' ? 'bg-green-600 text-white' : 'text-green-100 hover:bg-green-700'
-                    }`}
-                >
-                  <BarChart3 className="w-4 h-4 lg:w-5 lg:h-5" />
-                  <span>概要</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('employees')}
-                                      className={`flex flex-col lg:flex-row items-center justify-center lg:justify-start space-y-1 lg:space-y-0 lg:space-x-3 px-3 lg:px-4 py-3 rounded-lg lg:rounded-xl transition-colors text-sm lg:text-base min-h-[44px] ${
-                      activeTab === 'employees' ? 'bg-green-600 text-white' : 'text-green-100 hover:bg-green-700'
-                    }`}
-                >
-                  <Users className="w-4 h-4 lg:w-5 lg:h-5" />
-                  <span>社員管理</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('attendance')}
-                                      className={`flex flex-col lg:flex-row items-center justify-center lg:justify-start space-y-1 lg:space-y-0 lg:space-x-3 px-3 lg:px-4 py-3 rounded-lg lg:rounded-xl transition-colors text-sm lg:text-base min-h-[44px] ${
-                      activeTab === 'attendance' ? 'bg-green-600 text-white' : 'text-green-100 hover:bg-green-700'
-                    }`}
-                >
-                  <Calendar className="w-4 h-4 lg:w-5 lg:h-5" />
-                  <span>勤怠管理</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('company')}
-                                      className={`flex flex-col lg:flex-row items-center justify-center lg:justify-start space-y-1 lg:space-y-0 lg:space-x-3 px-3 lg:px-4 py-3 rounded-lg lg:rounded-xl transition-colors text-sm lg:text-base min-h-[44px] ${
-                      activeTab === 'company' ? 'bg-green-600 text-white' : 'text-green-100 hover:bg-green-700'
-                    }`}
-                >
-                  <Building2 className="w-4 h-4 lg:w-5 lg:h-5" />
-                  <span>企業設定</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('salary')}
-                                      className={`flex flex-col lg:flex-row items-center justify-center lg:justify-start space-y-1 lg:space-y-0 lg:space-x-3 px-3 lg:px-4 py-3 rounded-lg lg:rounded-xl transition-colors text-sm lg:text-base min-h-[44px] ${
-                      activeTab === 'salary' ? 'bg-green-600 text-white' : 'text-green-100 hover:bg-green-700'
-                    }`}
-                >
-                  <FileSpreadsheet className="w-4 h-4 lg:w-5 lg:h-5" />
-                  <span>給与テンプレート</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('terminal')}
-                                      className={`flex flex-col lg:flex-row items-center justify-center lg:justify-start space-y-1 lg:space-y-0 lg:space-x-3 px-3 lg:px-4 py-3 rounded-lg lg:rounded-xl transition-colors text-sm lg:text-base min-h-[44px] ${
-                      activeTab === 'terminal' ? 'bg-green-600 text-white' : 'text-green-100 hover:bg-green-700'
-                    }`}
-                >
-                  <Clock className="w-4 h-4 lg:w-5 lg:h-5" />
-                  <span>共有端末</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('employeeList')}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors text-sm font-medium ${
-                    activeTab === 'employeeList' ? 'bg-green-600 text-white' : 'text-green-100 hover:bg-green-700'
-                  }`}
-                >
-                  <Users className="w-5 h-5" />
-                  <span>従業員一覧</span>
-                </button>
-              </div>
+        {/* タブバー */}
+        <div className="bg-white border-b border-gray-200 shadow-sm">
+          <div className="max-w-7xl mx-auto px-6">
+            <nav className="flex space-x-8 overflow-x-auto">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                  activeTab === 'overview'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <BarChart3 className="w-4 h-4" />
+                <span>概要</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('employees')}
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                  activeTab === 'employees'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Users className="w-4 h-4" />
+                <span>社員管理</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('attendance')}
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                  activeTab === 'attendance'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Calendar className="w-4 h-4" />
+                <span>勤怠管理</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('company')}
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                  activeTab === 'company'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Building2 className="w-4 h-4" />
+                <span>企業設定</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('salary')}
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                  activeTab === 'salary'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <FileSpreadsheet className="w-4 h-4" />
+                <span>給与テンプレート</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('terminal')}
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                  activeTab === 'terminal'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Clock className="w-4 h-4" />
+                <span>共有端末</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('employeeList')}
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                  activeTab === 'employeeList'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Users className="w-4 h-4" />
+                <span>従業員一覧</span>
+              </button>
             </nav>
-          </aside>
+          </div>
+        </div>
+
+        {/* メインコンテンツ */}
+      <div className="max-w-7xl mx-auto px-3 py-4 sm:px-4 sm:py-8">
+        <div className="space-y-6">
 
           {/* メインエリア */}
-          <main className="flex-1">
+          <main>
             <div className="space-y-6">
               {/* 概要タブ */}
               {activeTab === 'overview' && (
