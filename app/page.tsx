@@ -75,6 +75,16 @@ export default function MainPage() {
         if (isCompanyInitialized()) {
           // 初期化完了済みの場合、打刻記録を読み込み
           loadTimeRecords();
+          
+          // デバッグ用：社員データの確認
+          const savedAppData = localStorage.getItem('tick_app_data');
+          if (savedAppData) {
+            const appData = JSON.parse(savedAppData);
+            console.log('共有端末で読み込まれた社員データ:', appData.employees);
+            console.log('利用可能な社員番号:', appData.employees?.map(emp => emp.id) || []);
+          } else {
+            console.log('tick_app_dataが見つかりません');
+          }
         } else {
           setShowSetupGuide(true);
         }
@@ -116,15 +126,21 @@ export default function MainPage() {
     }
 
     // 社員情報を取得
-    const savedEmployees = localStorage.getItem('tick_employees');
+    const savedAppData = localStorage.getItem('tick_app_data');
     let employees: Employee[] = [];
-    if (savedEmployees) {
-      employees = JSON.parse(savedEmployees);
+    if (savedAppData) {
+      const appData = JSON.parse(savedAppData);
+      employees = appData.employees || [];
     }
+
+    // デバッグ用：社員データの確認
+    console.log('検索中の社員番号:', modalEmployeeId.trim());
+    console.log('取得された社員データ:', employees);
+    console.log('利用可能な社員番号:', employees.map(emp => emp.id));
 
     const employee = employees.find(emp => emp.id === modalEmployeeId.trim());
     if (!employee) {
-      alert('社員番号が見つかりません');
+      alert(`社員番号「${modalEmployeeId.trim()}」が見つかりません。\n\n利用可能な社員番号: ${employees.map(emp => emp.id).join(', ')}\n\n正しい4桁の社員番号を入力してください。`);
       return;
     }
 
@@ -167,11 +183,7 @@ export default function MainPage() {
     }, 3000);
   };
 
-  // 今日の出勤者数
-  const todayRecords = timeRecords.filter(record => 
-    record.date === new Date().toISOString().split('T')[0]
-  );
-  const presentCount = todayRecords.length;
+
 
   if (isLoading) {
     return (
@@ -216,34 +228,25 @@ export default function MainPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-[#f8f6f3]">
       {/* ヘッダー */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-white/20 shadow-lg">
-        <div className="max-w-6xl mx-auto px-3 py-3 sm:px-4 sm:py-4">
+      <header className="bg-[#f8f6f3] border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 sm:space-x-6">
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
-                  <Clock className="w-4 h-4 sm:w-6 sm:w-6 text-white" />
-                </div>
-                <h1 className="text-lg sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
-                  Tick
-                </h1>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center">
+                <Clock className="w-6 h-6 text-white" />
               </div>
-              <div className="hidden md:block">
-                <p className="text-sm sm:text-lg font-semibold text-slate-800">共有端末</p>
-              </div>
+              <h1 className="text-2xl font-bold text-gray-800">Tick勤怠管理</h1>
             </div>
-            
-
 
             {/* 管理者ログインボタン */}
             <a 
               href="/login" 
-              className="flex items-center space-x-1 sm:space-x-2 px-2 py-2 sm:px-4 text-slate-600 hover:text-slate-800 hover:bg-slate-50 rounded-xl transition-all duration-200 min-w-[44px] min-h-[44px]"
+              className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline text-sm">管理者ログイン</span>
+              <Shield className="w-5 h-5" />
+              <span className="text-sm">管理者ログイン</span>
             </a>
           </div>
         </div>
@@ -333,27 +336,7 @@ export default function MainPage() {
           </p>
         </div>
 
-        {/* 今日の打刻履歴 */}
-        {todayRecords.length > 0 && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 border border-white/20">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">今日の打刻履歴</h3>
-            <div className="space-y-2">
-              {todayRecords.map((record) => (
-                <div key={record.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <span className="font-medium text-slate-800">{record.employeeName}</span>
-                    <span className="text-sm text-slate-500">
-                      {record.type === 'clockIn' ? '出勤' : 
-                       record.type === 'clockOut' ? '退勤' : 
-                       record.type === 'breakStart' ? '休憩開始' : '休憩終了'}
-                    </span>
-                  </div>
-                  <span className="text-sm text-slate-600">{record.time}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+
       </main>
 
       {/* フッター */}
@@ -379,10 +362,12 @@ export default function MainPage() {
                 type="text"
                 value={modalEmployeeId}
                 onChange={(e) => setModalEmployeeId(e.target.value)}
-                placeholder="社員番号を入力してください"
+                placeholder="例: 0001, 0002 (4桁の数字)"
                 className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onKeyPress={(e) => e.key === 'Enter' && handleConfirmTimeRecord()}
                 autoFocus
+                maxLength={4}
+                pattern="[0-9]*"
               />
             </div>
 

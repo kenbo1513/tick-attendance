@@ -250,7 +250,7 @@ export default function TimeRecordList({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <div className="flex items-center space-x-1">
                   <User className="w-4 h-4" />
-                  <span>従業員</span>
+                  <span>社員</span>
                 </div>
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">

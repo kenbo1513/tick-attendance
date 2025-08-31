@@ -80,34 +80,34 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-green-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* ロゴとタイトル */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl mb-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-green-600 rounded-2xl mb-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
             <Shield className="w-12 h-12 text-white" />
           </div>
-          <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-3">Tick</h1>
-          <p className="text-xl text-slate-600 font-medium">管理者ログイン</p>
-          <p className="text-sm text-slate-500 mt-2">システム管理用</p>
+          <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-800 mb-3">Tick</h1>
+          <p className="text-xl text-green-700 font-medium">管理者ログイン</p>
+          <p className="text-sm text-green-600 mt-2">システム管理用</p>
         </div>
 
         {/* ログインフォーム */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/20">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 border border-green-200">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-slate-800 mb-3">管理者認証</h2>
-            <p className="text-slate-600">管理者IDとパスワードを入力してください</p>
+            <h2 className="text-2xl font-bold text-green-800 mb-3">管理者認証</h2>
+            <p className="text-green-700">管理者IDとパスワードを入力してください</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
             {/* 管理者ID入力 */}
             <div>
-              <label htmlFor="adminId" className="block text-sm font-semibold text-slate-700 mb-3">
+              <label htmlFor="adminId" className="block text-sm font-semibold text-green-700 mb-3">
                 管理者ID
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                  <User className="h-5 w-5 text-green-400 group-focus-within:text-green-600 transition-colors" />
                 </div>
                 <input
                   id="adminId"
@@ -115,7 +115,7 @@ export default function AdminLoginPage() {
                   value={adminId}
                   onChange={handleAdminIdChange}
                   onKeyUp={handleKeyPress}
-                  className="block w-full pl-12 pr-4 py-4 text-xl font-medium border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
+                  className="block w-full pl-12 pr-4 py-4 text-xl font-medium border-2 border-green-200 rounded-2xl focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all duration-200 bg-white"
                   placeholder="管理者ID"
                   required
                   autoFocus
@@ -125,12 +125,12 @@ export default function AdminLoginPage() {
 
             {/* パスワード入力 */}
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-slate-700 mb-3">
+              <label htmlFor="password" className="block text-sm font-semibold text-green-700 mb-3">
                 パスワード
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                  <Lock className="h-5 w-5 text-green-400 group-focus-within:text-green-600 transition-colors" />
                 </div>
                 <input
                   id="password"
@@ -138,7 +138,7 @@ export default function AdminLoginPage() {
                   value={password}
                   onChange={handlePasswordChange}
                   onKeyUp={handleKeyPress}
-                  className="block w-full pl-12 pr-4 py-4 text-xl font-medium border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
+                  className="block w-full pl-12 pr-4 py-4 text-xl font-medium border-2 border-green-200 rounded-2xl focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all duration-200 bg-white"
                   placeholder="パスワード"
                   required
                 />
@@ -159,7 +159,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={!adminId.trim() || !password.trim() || isLoading}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-300 disabled:to-slate-400 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-2xl text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 group"
+              className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:from-green-300 disabled:to-green-400 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-2xl text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 group"
             >
               <span className="flex items-center justify-center">
                 {isLoading ? '認証中...' : 'ログイン'}
@@ -169,10 +169,10 @@ export default function AdminLoginPage() {
           </form>
 
           {/* 共有端末に戻るリンク */}
-          <div className="mt-8 pt-6 border-t border-slate-200">
+          <div className="mt-8 pt-6 border-t border-green-200">
             <button
               onClick={() => router.push('/')}
-              className="inline-flex items-center text-sm text-slate-500 hover:text-blue-600 transition-colors font-medium"
+              className="inline-flex items-center text-sm text-green-600 hover:text-green-800 transition-colors font-medium"
             >
               <Clock className="w-4 h-4 mr-2" />
               共有端末に戻る
@@ -182,8 +182,8 @@ export default function AdminLoginPage() {
 
         {/* フッター */}
         <div className="text-center mt-8">
-          <p className="text-sm text-slate-500">
-            © 2024 Tick勤怠管理システム
+          <p className="text-sm text-green-600">
+            © 2025 Tick勤怠管理システム
           </p>
         </div>
       </div>

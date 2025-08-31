@@ -85,7 +85,7 @@ export default function EmployeeList({
       {/* ヘッダー */}
       <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">従業員一覧</h2>
+          <h2 className="text-lg font-semibold text-gray-900">社員一覧</h2>
           <div className="flex space-x-3">
             <button
               onClick={onImportCSV}
@@ -106,7 +106,7 @@ export default function EmployeeList({
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
               <Plus className="w-4 h-4 mr-2" />
-              従業員追加
+              社員追加
             </button>
           </div>
         </div>
@@ -122,7 +122,7 @@ export default function EmployeeList({
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
               >
                 <div className="flex items-center space-x-1">
-                  <span>社員ID</span>
+                  <span>社員番号</span>
                   <span className="text-sm">{getSortIcon('id')}</span>
                 </div>
               </th>

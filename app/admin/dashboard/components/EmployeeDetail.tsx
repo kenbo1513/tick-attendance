@@ -23,7 +23,7 @@ export default function EmployeeDetail({
   const [editedEmployee, setEditedEmployee] = useState<Employee | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // 従業員データが変更されたときに編集用データを初期化
+  // 社員データが変更されたときに編集用データを初期化
   useEffect(() => {
     if (employee) {
       setEditedEmployee({ ...employee });
@@ -103,7 +103,7 @@ export default function EmployeeDetail({
         {/* ヘッダー */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">
-            {isEditing ? '従業員情報編集' : '従業員詳細'}
+            {isEditing ? '社員情報編集' : '社員詳細'}
           </h2>
           <div className="flex items-center space-x-2">
             {!isEditing && (

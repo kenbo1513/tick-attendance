@@ -28,8 +28,14 @@ export default function EmployeeManagement() {
   useEffect(() => {
     const loadEmployees = () => {
       const loadedEmployees = getEmployees();
-      setEmployees(loadedEmployees);
-      setFilteredEmployees(loadedEmployees);
+                // 社員登録していない人（未登録の社員）を除外
+          const registeredEmployees = loadedEmployees.filter(emp => 
+            emp.name && emp.name.trim() !== '' && 
+            emp.department && emp.department.trim() !== '' && 
+            emp.position && emp.position.trim() !== ''
+          );
+      setEmployees(registeredEmployees);
+      setFilteredEmployees(registeredEmployees);
     };
 
     loadEmployees();
@@ -94,8 +100,8 @@ export default function EmployeeManagement() {
     return Array.from(pos).sort();
   }, [employees]);
 
-  // 従業員追加
-  const handleAddEmployee = (employeeData: Omit<Employee, 'id'>) => {
+  // 社員追加
+  const handleAddEmployee = (employeeData: Omit<Employee, 'id'> & { employeeNumber?: string }) => {
     const newEmployee = addEmployee(employeeData);
     if (newEmployee) {
       setEmployees(prev => [...prev, newEmployee]);
@@ -103,7 +109,7 @@ export default function EmployeeManagement() {
     }
   };
 
-  // 従業員更新
+  // 社員更新
   const handleUpdateEmployee = (updatedEmployee: Employee) => {
     if (updateEmployee(updatedEmployee)) {
       setEmployees(prev => prev.map(emp => 
@@ -114,7 +120,7 @@ export default function EmployeeManagement() {
     }
   };
 
-  // 従業員削除
+  // 社員削除
   const handleDeleteEmployee = (employeeId: string) => {
     if (deleteEmployee(employeeId)) {
       setEmployees(prev => prev.filter(emp => emp.id !== employeeId));
@@ -123,13 +129,13 @@ export default function EmployeeManagement() {
     }
   };
 
-  // 従業員詳細表示
+  // 社員詳細表示
   const handleViewEmployee = (employee: Employee) => {
     setSelectedEmployee(employee);
     setShowEmployeeDetail(true);
   };
 
-  // 従業員編集
+  // 社員編集
   const handleEditEmployee = (employee: Employee) => {
     setSelectedEmployee(employee);
     setShowEmployeeDetail(true);
@@ -138,7 +144,7 @@ export default function EmployeeManagement() {
   // CSV出力
   const handleExportCSV = () => {
     const csvContent = [
-      ['社員ID', '氏名', '部署', '役職', '時給', '基本給', '交通費', '食事手当', '入社日', 'ステータス'],
+      ['社員番号', '氏名', '部署', '役職', '時給', '基本給', '交通費', '食事手当', '入社日', 'ステータス'],
       ...filteredEmployees.map(emp => [
         emp.id,
         emp.name,
@@ -157,7 +163,7 @@ export default function EmployeeManagement() {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `従業員一覧_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `社員一覧_${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -190,6 +196,10 @@ export default function EmployeeManagement() {
               headers.forEach((header, index) => {
                 const value = values[index];
                 switch (header) {
+                  case '社員番号':
+                  case '社員ID':
+                    employeeData.employeeNumber = value;
+                    break;
                   case '氏名':
                     employeeData.name = value;
                     break;
@@ -236,7 +246,7 @@ export default function EmployeeManagement() {
           // 結果を表示
           alert(`CSV一括登録完了\n成功: ${successCount}件\nエラー: ${errorCount}件`);
           
-          // 従業員リストを再読み込み
+          // 社員リストを再読み込み
           const loadedEmployees = getEmployees();
           setEmployees(loadedEmployees);
         };
@@ -256,7 +266,7 @@ export default function EmployeeManagement() {
         positions={positions}
       />
 
-      {/* 従業員一覧 */}
+      {/* 社員一覧 */}
       <EmployeeList
         employees={filteredEmployees}
         onEdit={handleEditEmployee}
@@ -267,14 +277,14 @@ export default function EmployeeManagement() {
         onImportCSV={handleImportCSV}
       />
 
-      {/* 新規従業員登録フォーム */}
+      {/* 新規社員登録フォーム */}
       <EmployeeForm
         isOpen={showEmployeeForm}
         onClose={() => setShowEmployeeForm(false)}
         onSave={handleAddEmployee}
       />
 
-      {/* 従業員詳細・編集モーダル */}
+      {/* 社員詳細・編集モーダル */}
       <EmployeeDetail
         employee={selectedEmployee}
         isOpen={showEmployeeDetail}

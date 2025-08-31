@@ -16,6 +16,7 @@ export default function EmployeeForm({
   onSave
 }: EmployeeFormProps) {
   const [formData, setFormData] = useState({
+    employeeNumber: '',
     name: '',
     department: '',
     position: '',
@@ -87,7 +88,8 @@ export default function EmployeeForm({
   // 保存処理
   const handleSave = () => {
     if (validateForm()) {
-      const employeeData: Omit<Employee, 'id'> = {
+      const employeeData: Omit<Employee, 'id'> & { employeeNumber?: string } = {
+        employeeNumber: formData.employeeNumber.trim() || undefined,
         name: formData.name.trim(),
         department: formData.department.trim(),
         position: formData.position.trim(),
@@ -110,6 +112,7 @@ export default function EmployeeForm({
   // フォームを閉じる
   const handleClose = () => {
     setFormData({
+      employeeNumber: '',
       name: '',
       department: '',
       position: '',
@@ -141,7 +144,7 @@ export default function EmployeeForm({
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* ヘッダー */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">新規従業員登録</h2>
+          <h2 className="text-xl font-semibold text-gray-900">新規社員登録</h2>
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600"
@@ -159,6 +162,31 @@ export default function EmployeeForm({
                 <User className="w-5 h-5 mr-2" />
                 基本情報
               </h3>
+              
+              {/* 社員番号 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  社員番号
+                </label>
+                <input
+                  type="text"
+                  value={formData.employeeNumber}
+                  onChange={(e) => {
+                    // 数字のみ入力可能
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    // 4桁以内に制限
+                    if (value.length <= 4) {
+                      updateField('employeeNumber', value);
+                    }
+                  }}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  placeholder="空欄の場合は自動で4桁の番号を設定"
+                  maxLength={4}
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  4桁の数字で入力してください。空欄の場合は自動で設定されます。
+                </p>
+              </div>
               
               {/* 氏名 */}
               <div>

@@ -46,6 +46,49 @@ export interface TimeRecord {
   notes?: string;
 }
 
+// 申請関連の型定義
+export interface ApprovalRequest {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  department: string;
+  requestType: 'timeCorrection' | 'leaveRequest';
+  status: 'pending' | 'approved' | 'rejected';
+  submittedAt: string;
+  processedAt?: string;
+  processedBy?: string;
+  reason?: string;
+  notes?: string;
+}
+
+// 時刻修正申請の型定義
+export interface TimeCorrectionRequest extends ApprovalRequest {
+  requestType: 'timeCorrection';
+  originalRecord: {
+    id: string;
+    date: string;
+    time: string;
+    type: string;
+  };
+  requestedChanges: {
+    date: string;
+    time: string;
+    type: string;
+    notes: string;
+  };
+}
+
+// 休暇申請の型定義
+export interface LeaveRequest extends ApprovalRequest {
+  requestType: 'leaveRequest';
+  leaveType: 'paid' | 'unpaid' | 'sick' | 'special';
+  startDate: string;
+  endDate: string;
+  days: number;
+  reason: string;
+  supportingDocuments?: string[];
+}
+
 // 統合データの型定義
 export interface AppData {
   employees: Employee[];
@@ -609,14 +652,37 @@ export const addAttendanceRecord = (record: Omit<AttendanceRecord, 'id'>): boole
 };
 
 // 新しい社員の追加
-export const addEmployee = (employee: Omit<Employee, 'id'>): Employee | null => {
+export const addEmployee = (employee: Omit<Employee, 'id'> & { employeeNumber?: string }): Employee | null => {
   try {
     const employees = loadEmployeeData();
     
-    // 自動生成IDで新しい社員を作成
+    // 社員番号の生成
+    let employeeNumber: string;
+    if (employee.employeeNumber && employee.employeeNumber.trim() !== '') {
+      // ユーザーが指定した社員番号を使用
+      employeeNumber = employee.employeeNumber.trim();
+      
+      // 重複チェック
+      if (employees.some(emp => emp.id === employeeNumber)) {
+        console.error('指定された社員番号は既に使用されています');
+        return null;
+      }
+    } else {
+      // 自動生成：既存の社員番号の最大値+1、または1001から開始
+      const existingNumbers = employees
+        .map(emp => emp.id)
+        .filter(id => /^\d{4}$/.test(id)) // 4桁の数字のみ
+        .map(id => parseInt(id))
+        .sort((a, b) => b - a);
+      
+      const nextNumber = existingNumbers.length > 0 ? existingNumbers[0] + 1 : 1001;
+      employeeNumber = nextNumber.toString().padStart(4, '0');
+    }
+    
+    // 新しい社員を作成
     const newEmployee: Employee = {
       ...employee,
-      id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}` // 自動生成ID
+      id: employeeNumber
     };
     
     employees.push(newEmployee);
