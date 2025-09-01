@@ -86,7 +86,7 @@ export default function MainPage() {
           if (savedAppData) {
             const appData = JSON.parse(savedAppData);
             console.log('共有端末で読み込まれた社員データ:', appData.employees);
-            console.log('利用可能な社員番号:', appData.employees?.map(emp => emp.id) || []);
+            console.log('利用可能な社員番号:', appData.employees?.map((emp: Employee) => emp.id) || []);
           } else {
             console.log('tick_app_dataが見つかりません');
           }
@@ -141,11 +141,11 @@ export default function MainPage() {
     // デバッグ用：社員データの確認
     console.log('検索中の社員番号:', modalEmployeeId.trim());
     console.log('取得された社員データ:', employees);
-    console.log('利用可能な社員番号:', employees.map(emp => emp.id));
+    console.log('利用可能な社員番号:', employees.map((emp: Employee) => emp.id));
 
-    const employee = employees.find(emp => emp.id === modalEmployeeId.trim());
+    const employee = employees.find((emp: Employee) => emp.id === modalEmployeeId.trim());
     if (!employee) {
-      alert(`社員番号「${modalEmployeeId.trim()}」が見つかりません。\n\n利用可能な社員番号: ${employees.map(emp => emp.id).join(', ')}\n\n正しい4桁の社員番号を入力してください。`);
+      alert(`社員番号「${modalEmployeeId.trim()}」が見つかりません。\n\n利用可能な社員番号: ${employees.map((emp: Employee) => emp.id).join(', ')}\n\n正しい4桁の社員番号を入力してください。`);
       return;
     }
 

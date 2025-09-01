@@ -37,6 +37,7 @@ export interface TimeRecord {
   id: string;
   employeeId: string;
   employeeName: string;
+  department?: string; // 部署情報を追加
   type: 'clockIn' | 'clockOut' | 'breakStart' | 'breakEnd';
   time: string;
   date: string;
