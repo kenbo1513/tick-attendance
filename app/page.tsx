@@ -16,9 +16,14 @@ interface TimeRecord {
   id: string;
   employeeId: string;
   employeeName: string;
+  department: string;
   type: 'clockIn' | 'clockOut' | 'breakStart' | 'breakEnd';
   time: string;
   date: string;
+  location?: string;
+  ipAddress?: string;
+  deviceInfo?: string;
+  notes?: string;
 }
 
 interface CompanyInfo {
@@ -150,13 +155,18 @@ export default function MainPage() {
       id: Date.now().toString(),
       employeeId: employee.id,
       employeeName: employee.name,
+      department: employee.department,
       type: modalType,
       time: now.toLocaleTimeString('ja-JP', { 
         hour: '2-digit', 
         minute: '2-digit', 
         second: '2-digit' 
       }),
-      date: now.toISOString().split('T')[0]
+      date: now.toISOString().split('T')[0],
+      location: '東京都渋谷区', // デフォルトの位置情報
+      ipAddress: '192.168.1.100', // デフォルトのIPアドレス
+      deviceInfo: 'Shared Terminal', // デバイス情報
+      notes: ''
     };
 
     // 打刻記録を保存

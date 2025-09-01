@@ -6,7 +6,6 @@ import TimeRecordList from './TimeRecordList';
 import TimeRecordDetail from './TimeRecordDetail';
 import TimeRecordEdit from './TimeRecordEdit';
 import AttendanceFilter from './AttendanceFilter';
-import AlertPanel from './AlertPanel';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 
 interface AttendanceManagementProps {
@@ -23,8 +22,7 @@ export default function AttendanceManagement({ timeRecords: propTimeRecords, emp
     employeeId: '',
     department: '',
     type: '',
-    hasLocation: false,
-    isAbnormal: false
+    hasLocation: false
   });
   const [selectedDateRange, setSelectedDateRange] = useState({
     start: startOfDay(subDays(new Date(), 30)), // 過去30日
@@ -35,41 +33,11 @@ export default function AttendanceManagement({ timeRecords: propTimeRecords, emp
   const [showTimeRecordDetail, setShowTimeRecordDetail] = useState(false);
   const [showTimeRecordEdit, setShowTimeRecordEdit] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<TimeRecord | null>(null);
-  
-  // アラートパネルの状態
-  const [isAlertPanelVisible, setIsAlertPanelVisible] = useState(false);
-  
-
 
   // 初期データ読み込み
   useEffect(() => {
     const loadData = () => {
-      // 共有端末からの打刻データを読み込み
-      const savedTimeRecords = localStorage.getItem('tick_timeRecords');
-      let actualRecords: TimeRecord[] = [];
-      
-      if (savedTimeRecords) {
-        try {
-          const parsedRecords = JSON.parse(savedTimeRecords);
-          // 社員ID 0001と0002の打刻データを正しい社員情報で更新
-          actualRecords = parsedRecords.map((record: any) => {
-            if (record.employeeId === '0001' || record.employeeId === '0002') {
-              // 社員ID 0001と0002は田中太郎にマッピング
-              return {
-                ...record,
-                employeeName: '田中太郎',
-                department: '営業部'
-              };
-            }
-            return record;
-          });
-          console.log('読み込まれた打刻データ:', actualRecords);
-        } catch (error) {
-          console.error('打刻データの読み込みエラー:', error);
-        }
-      }
-      
-      // 社員データも読み込み
+      // 社員データを先に読み込み
       const savedAppData = localStorage.getItem('tick_app_data');
       let actualEmployees: Employee[] = [];
       
@@ -78,12 +46,23 @@ export default function AttendanceManagement({ timeRecords: propTimeRecords, emp
           const appData = JSON.parse(savedAppData);
           actualEmployees = appData.employees || [];
           console.log('読み込まれた社員データ:', actualEmployees);
-          console.log('社員データの詳細:', actualEmployees.map(emp => ({ id: emp.id, name: emp.name, department: emp.department })));
         } catch (error) {
           console.error('社員データの読み込みエラー:', error);
         }
-      } else {
-        console.warn('tick_app_dataが見つかりません');
+      }
+      
+      // 共有端末からの打刻データを読み込み
+      const savedTimeRecords = localStorage.getItem('tick_timeRecords');
+      let actualRecords: TimeRecord[] = [];
+      
+      if (savedTimeRecords) {
+        try {
+          const parsedRecords = JSON.parse(savedTimeRecords);
+          actualRecords = parsedRecords;
+          console.log('読み込まれた打刻データ:', actualRecords);
+        } catch (error) {
+          console.error('打刻データの読み込みエラー:', error);
+        }
       }
       
       // 打刻データがない場合はモックデータを使用
@@ -101,18 +80,6 @@ export default function AttendanceManagement({ timeRecords: propTimeRecords, emp
             ipAddress: '192.168.1.100',
             deviceInfo: 'iPhone 14, Chrome 120.0',
             notes: ''
-          },
-          {
-            id: '2',
-            employeeId: '0002',
-            employeeName: '田中太郎',
-            type: 'clockIn',
-            time: '09:00',
-            date: '2025-01-27',
-            location: '東京都渋谷区',
-            ipAddress: '192.168.1.100',
-            deviceInfo: 'iPhone 14, Chrome 120.0',
-            notes: ''
           }
         ];
         actualRecords = mockRecords;
@@ -122,19 +89,11 @@ export default function AttendanceManagement({ timeRecords: propTimeRecords, emp
       const finalTimeRecords = propTimeRecords || actualRecords;
       const finalEmployees = propEmployees || actualEmployees;
       
-      // 既存の打刻データの社員名を最新の社員データで更新
+      // 打刻データの社員名と部署を最新の社員データで更新
       const updatedTimeRecords = finalTimeRecords.map(record => {
-        // 社員ID 0001と0002を強制的に田中太郎にマッピング
-        if (record.employeeId === '0001' || record.employeeId === '0002') {
-          return {
-            ...record,
-            employeeName: '田中太郎',
-            department: '営業部'
-          };
-        }
-        
-        // その他の社員IDは通常通り検索
+        // 社員データから該当する社員を検索
         const mappedEmployee = finalEmployees.find(emp => emp.id === record.employeeId);
+        
         if (mappedEmployee) {
           return {
             ...record,
@@ -142,17 +101,12 @@ export default function AttendanceManagement({ timeRecords: propTimeRecords, emp
             department: mappedEmployee.department || '不明'
           };
         } else {
-          // 社員が見つからない場合、デフォルトの社員情報を設定
-          if (finalEmployees.length > 0) {
-            const defaultEmployee = finalEmployees[0];
-            return {
-              ...record,
-              employeeName: defaultEmployee.name,
-              department: defaultEmployee.department || '不明'
-            };
-          }
-          // 社員データが全くない場合は元のデータを返す
-          return record;
+          // 社員が見つからない場合は元のデータを返す
+          return {
+            ...record,
+            employeeName: record.employeeName || '不明',
+            department: record.department || '不明'
+          };
         }
       });
       
@@ -220,32 +174,8 @@ export default function AttendanceManagement({ timeRecords: propTimeRecords, emp
       result = result.filter(record => record.location && record.location.trim() !== '');
     }
 
-    if (filters.isAbnormal) {
-      // 異常検知ロジックを適用
-      result = result.filter(record => {
-        // 簡易的な異常判定（実際の実装ではより詳細なロジックが必要）
-        return false; // 仮の実装
-      });
-    }
-
     setFilteredRecords(result);
   }, [timeRecords, searchQuery, filters, selectedDateRange, employees]);
-
-  // 従業員データの読み込み（実際の実装ではAPIから取得）
-  useEffect(() => {
-    const mockEmployees: Employee[] = [
-      {
-        id: '12345',
-        name: '田中太郎',
-        department: '営業部',
-        position: '主任',
-        hourlyWage: 1200,
-        monthlySalary: 250000,
-        isActive: true
-      }
-    ];
-    setEmployees(mockEmployees);
-  }, []);
 
   // 勤務記録詳細表示
   const handleViewRecord = (record: TimeRecord) => {
@@ -270,8 +200,8 @@ export default function AttendanceManagement({ timeRecords: propTimeRecords, emp
 
   // CSV出力
   const handleExportCSV = () => {
-          const csvContent = [
-        ['日付', '時刻', '社員番号', '社員名', '部署', '打刻種別', '位置情報', 'IPアドレス', 'デバイス情報', 'メモ'],
+    const csvContent = [
+      ['日付', '時刻', '社員番号', '社員名', '部署', '打刻種別', '位置情報', 'IPアドレス', 'デバイス情報', 'メモ'],
       ...filteredRecords.map(record => {
         const employee = employees.find(emp => emp.id === record.employeeId);
         return [
@@ -300,20 +230,8 @@ export default function AttendanceManagement({ timeRecords: propTimeRecords, emp
     document.body.removeChild(link);
   };
 
-  // リアルタイム更新（5分間隔）
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // 実際の実装では、APIから最新データを取得
-      console.log('リアルタイム更新実行:', new Date().toISOString());
-    }, 5 * 60 * 1000); // 5分
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="space-y-6">
-
-
       {/* 検索・フィルタ */}
       <AttendanceFilter
         onSearch={setSearchQuery}
@@ -354,14 +272,6 @@ export default function AttendanceManagement({ timeRecords: propTimeRecords, emp
           setSelectedRecord(null);
         }}
         onSave={handleUpdateRecord}
-      />
-
-      {/* 異常検知アラートパネル */}
-      <AlertPanel
-        timeRecords={timeRecords}
-        employees={employees}
-        isVisible={isAlertPanelVisible}
-        onToggleVisibility={() => setIsAlertPanelVisible(!isAlertPanelVisible)}
       />
     </div>
   );

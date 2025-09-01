@@ -140,12 +140,14 @@ export default function AdminDashboardPage() {
         }
 
         // 社員データ読み込み
-        const savedEmployees = localStorage.getItem('tick_employees');
-        console.log('社員データ読み込み結果:', savedEmployees);
-        if (savedEmployees && isMounted) {
+        const savedAppData = localStorage.getItem('tick_app_data');
+        console.log('社員データ読み込み結果:', savedAppData);
+        if (savedAppData && isMounted) {
           try {
-            const parsedEmployees = JSON.parse(savedEmployees);
+            const appData = JSON.parse(savedAppData);
+            const parsedEmployees = appData.employees || [];
             setEmployees(parsedEmployees);
+            console.log('読み込まれた社員データ:', parsedEmployees);
           } catch (e) {
             console.error('社員データのパースエラー:', e);
           }
@@ -157,22 +159,16 @@ export default function AdminDashboardPage() {
         if (savedRecords && isMounted) {
           try {
             const parsedRecords = JSON.parse(savedRecords);
-            // 社員ID 0001と0002の打刻データを正しい社員情報で更新
+            // 社員データを使って打刻記録の社員名と部署を更新
+            const appData = JSON.parse(localStorage.getItem('tick_app_data') || '{}');
+            const employees = appData.employees || [];
             const updatedRecords = parsedRecords.map((record: any) => {
-              if (record.employeeId === '0001' || record.employeeId === '0002') {
-                // 社員ID 0001と0002は田中太郎にマッピング
+              const employee = employees.find((emp: any) => emp.id === record.employeeId);
+              if (employee) {
                 return {
                   ...record,
-                  employeeName: '田中太郎',
-                  department: '営業部'
-                };
-              }
-              // その他の社員IDも確認
-              if (record.employeeName === '不明' || record.employeeName === undefined) {
-                return {
-                  ...record,
-                  employeeName: '田中太郎',
-                  department: '営業部'
+                  employeeName: employee.name,
+                  department: employee.department || '不明'
                 };
               }
               return record;

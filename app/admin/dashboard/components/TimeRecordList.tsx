@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { TimeRecord, Employee } from '@/app/lib/localStorage';
-import { Clock, MapPin, AlertTriangle, Download, Edit, Eye, Calendar, User, Building } from 'lucide-react';
+import { Clock, MapPin, Download, Edit, Eye, Calendar, User, Building } from 'lucide-react';
 import { format, parseISO, differenceInMinutes, isToday, isYesterday } from 'date-fns';
 import { ja } from 'date-fns/locale';
 
@@ -19,8 +19,6 @@ interface WorkTimeSummary {
   totalWorkMinutes: number;
   totalBreakMinutes: number;
   overtimeMinutes: number;
-  isAbnormal: boolean;
-  abnormalReasons: string[];
 }
 
 export default function TimeRecordList({
@@ -83,7 +81,6 @@ export default function TimeRecordList({
     let totalWorkMinutes = 0;
     let totalBreakMinutes = 0;
     let overtimeMinutes = 0;
-    const abnormalReasons: string[] = [];
     
     // 出勤・退勤のペアを見つける
     const clockInRecords = dayRecords.filter(r => r.type === 'clockIn');
@@ -102,13 +99,6 @@ export default function TimeRecordList({
         if (workMinutes > 480) {
           overtimeMinutes += workMinutes - 480;
         }
-        
-        // 12時間（720分）を超える場合は異常
-        if (workMinutes > 720) {
-          abnormalReasons.push('12時間超勤務');
-        }
-      } else {
-        abnormalReasons.push('退勤記録なし');
       }
     });
     
@@ -127,15 +117,10 @@ export default function TimeRecordList({
       }
     });
     
-    // 異常判定
-    const isAbnormal = abnormalReasons.length > 0 || totalWorkMinutes > 720;
-    
     return {
       totalWorkMinutes,
       totalBreakMinutes,
-      overtimeMinutes,
-      isAbnormal,
-      abnormalReasons
+      overtimeMinutes
     };
   };
 
@@ -291,9 +276,7 @@ export default function TimeRecordList({
               return (
                 <tr 
                   key={record.id} 
-                  className={`hover:bg-gray-50 ${
-                    workTime.isAbnormal ? 'bg-red-50 border-l-4 border-l-red-400' : ''
-                  }`}
+                  className="hover:bg-gray-50"
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <div className="flex flex-col">
@@ -342,11 +325,6 @@ export default function TimeRecordList({
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
-                      {workTime.isAbnormal && (
-                        <div className="flex items-center space-x-1 text-red-600" title={workTime.abnormalReasons.join(', ')}>
-                          <AlertTriangle className="w-4 h-4" />
-                        </div>
-                      )}
                       <button
                         onClick={() => onView(record)}
                         className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
