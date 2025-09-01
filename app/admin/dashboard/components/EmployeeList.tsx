@@ -83,27 +83,29 @@ export default function EmployeeList({
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       {/* ヘッダー */}
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
+      <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
           <h2 className="text-lg font-semibold text-gray-900">社員一覧</h2>
-          <div className="flex space-x-3">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
             <button
               onClick={onImportCSV}
-              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              className="inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
               <Upload className="w-4 h-4 mr-2" />
-              CSV一括登録
+              <span className="hidden xs:inline">CSV一括登録</span>
+              <span className="xs:hidden">CSV登録</span>
             </button>
             <button
               onClick={onExportCSV}
-              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              className="inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
               <Download className="w-4 h-4 mr-2" />
-              CSV出力
+              <span className="hidden xs:inline">CSV出力</span>
+              <span className="xs:hidden">CSV出力</span>
             </button>
             <button
               onClick={onAdd}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
               <Plus className="w-4 h-4 mr-2" />
               社員追加
@@ -300,14 +302,14 @@ export default function EmployeeList({
 
       {/* ページネーション */}
       {pageCount > 1 && (
-        <div className="px-6 py-4 border-t border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+            <div className="text-sm text-gray-700 text-center sm:text-left">
               <span>
                 {startIndex + 1} - {Math.min(endIndex, sortedEmployees.length)} / {sortedEmployees.length} 件
               </span>
             </div>
-            <div className="flex space-x-2">
+            <div className="flex justify-center sm:justify-end space-x-2">
               <button
                 onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
                 disabled={currentPage === 0}
@@ -347,11 +349,11 @@ export default function EmployeeList({
 
       {/* データが空の場合 */}
       {employees.length === 0 && (
-        <div className="px-6 py-12 text-center">
+        <div className="px-4 sm:px-6 py-8 sm:py-12 text-center">
           <div className="text-gray-500">
-            <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">従業員が登録されていません</h3>
-            <p className="text-gray-500">従業員追加ボタンから最初の従業員を登録してください。</p>
+            <Users className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 text-gray-300" />
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">従業員が登録されていません</h3>
+            <p className="text-sm sm:text-base text-gray-500">従業員追加ボタンから最初の従業員を登録してください。</p>
           </div>
         </div>
       )}
