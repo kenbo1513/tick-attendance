@@ -113,7 +113,7 @@ export default function EmployeeList({
       </div>
 
       {/* テーブル */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto hidden md:block">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -238,6 +238,64 @@ export default function EmployeeList({
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* モバイルカード一覧 */}
+      <div className="md:hidden divide-y divide-gray-200">
+        {currentEmployees.map((employee) => (
+          <div key={employee.id} className="p-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-xs text-gray-500">社員番号</div>
+                <div className="font-medium text-gray-900">{employee.id}</div>
+                <div className="mt-1 text-gray-900">{employee.name}</div>
+                <div className="text-xs text-gray-500">{employee.department} ・ {employee.position}</div>
+              </div>
+              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                employee.isActive 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-red-100 text-red-800'
+              }`}>
+                {employee.isActive ? '在籍' : '退職'}
+              </span>
+            </div>
+
+            <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+              <div className="bg-gray-50 rounded p-2">
+                <div className="text-gray-500 text-xs">時給</div>
+                <div className="text-gray-900">{employee.hourlyWage ? `${employee.hourlyWage.toLocaleString()}円` : '-'}</div>
+              </div>
+              <div className="bg-gray-50 rounded p-2">
+                <div className="text-gray-500 text-xs">基本給</div>
+                <div className="text-gray-900">{employee.monthlySalary ? `${employee.monthlySalary.toLocaleString()}円` : '-'}</div>
+              </div>
+            </div>
+
+            <div className="mt-3 flex items-center justify-end space-x-2">
+              <button
+                onClick={() => onView(employee)}
+                className="text-blue-600 hover:text-blue-900 px-2 py-1 text-sm rounded hover:bg-blue-50"
+                title="詳細表示"
+              >
+                <Eye className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => onEdit(employee)}
+                className="text-green-600 hover:text-green-900 px-2 py-1 text-sm rounded hover:bg-green-50"
+                title="編集"
+              >
+                <Edit className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => onDelete(employee.id)}
+                className="text-red-600 hover:text-red-900 px-2 py-1 text-sm rounded hover:bg-red-50"
+                title="削除"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* ページネーション */}

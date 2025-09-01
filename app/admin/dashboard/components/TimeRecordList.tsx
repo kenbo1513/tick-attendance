@@ -208,7 +208,7 @@ export default function TimeRecordList({
       </div>
 
       {/* テーブル */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto hidden md:block">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -346,6 +346,72 @@ export default function TimeRecordList({
             })}
           </tbody>
         </table>
+      </div>
+
+      {/* モバイルカード一覧 */}
+      <div className="md:hidden divide-y divide-gray-200">
+        {currentRecords.map((record) => {
+          const workTime = calculateWorkTime(record.employeeId, record.date);
+          const employeeName = getEmployeeName(record.employeeId);
+          const department = getEmployeeDepartment(record.employeeId);
+
+          return (
+            <div key={record.id} className="p-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="text-sm text-gray-500">{formatDate(record.date)} ・ {formatTime(record.time)}</div>
+                  <div className="mt-1 font-medium text-gray-900">{employeeName}</div>
+                  <div className="text-xs text-gray-500">ID: {record.employeeId} ・ {department}</div>
+                </div>
+                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getTypeColor(record.type)}`}>
+                  {getTypeLabel(record.type)}
+                </span>
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                <div className="bg-gray-50 rounded p-2">
+                  <div className="text-gray-500 text-xs">労働時間</div>
+                  <div className="text-gray-900">
+                    {workTime.totalWorkMinutes > 0 ? formatWorkTime(workTime.totalWorkMinutes) : '-'}
+                  </div>
+                  {workTime.overtimeMinutes > 0 && (
+                    <div className="text-xs text-red-600 mt-1">残業: {formatWorkTime(workTime.overtimeMinutes)}</div>
+                  )}
+                </div>
+                <div className="bg-gray-50 rounded p-2">
+                  <div className="text-gray-500 text-xs">位置情報</div>
+                  <div className="text-gray-900 flex items-center space-x-1">
+                    {record.location ? (
+                      <>
+                        <MapPin className="w-3 h-3 text-gray-500" />
+                        <span className="truncate">{record.location}</span>
+                      </>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3 flex items-center justify-end space-x-2">
+                <button
+                  onClick={() => onView(record)}
+                  className="text-blue-600 hover:text-blue-900 px-2 py-1 text-sm rounded hover:bg-blue-50"
+                  title="詳細表示"
+                >
+                  <Eye className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => onEdit(record)}
+                  className="text-green-600 hover:text-green-900 px-2 py-1 text-sm rounded hover:bg-green-50"
+                  title="編集"
+                >
+                  <Edit className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* ページネーション */}
