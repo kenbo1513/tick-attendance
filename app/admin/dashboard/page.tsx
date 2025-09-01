@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, Users, UserCheck, UserX, BarChart3, Calendar, LogOut, Building2, Plus, Settings, CheckCircle, FileSpreadsheet, CheckSquare, AlertCircle } from 'lucide-react';
+import { Clock, Users, UserCheck, UserX, BarChart3, Calendar, LogOut, Building2, Plus, Settings, CheckCircle, FileSpreadsheet, AlertCircle } from 'lucide-react';
 import EmployeeManagement from './components/EmployeeManagement';
 import AttendanceManagement from './components/AttendanceManagement';
-import ApprovalManagement from './components/ApprovalManagement';
 import * as XLSX from 'xlsx';
 import { 
   checkAdminSession, 
@@ -60,7 +59,7 @@ interface CompanySettings {
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'employees' | 'attendance' | 'salary' | 'terminal' | 'approval'>('employees');
+  const [activeTab, setActiveTab] = useState<'employees' | 'attendance' | 'salary' | 'terminal'>('employees');
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [timeRecords, setTimeRecords] = useState<TimeRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -885,17 +884,7 @@ export default function AdminDashboardPage() {
                 <Clock className="w-4 h-4" />
                 <span>共有端末</span>
               </button>
-              <button
-                onClick={() => setActiveTab('approval')}
-                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                  activeTab === 'approval'
-                    ? 'border-green-500 text-green-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <CheckSquare className="w-4 h-4" />
-                <span>申請承認</span>
-              </button>
+
             </nav>
           </div>
         </div>
@@ -918,12 +907,7 @@ export default function AdminDashboardPage() {
                 </div>
               )}
 
-              {/* 申請承認タブ */}
-              {activeTab === 'approval' && (
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-white/20">
-                  <ApprovalManagement />
-                </div>
-              )}
+
 
               {/* 勤怠管理タブ */}
               {activeTab === 'attendance' && (
