@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building2, User, CheckCircle, Clock } from 'lucide-react';
+import { Building2, User, CheckCircle, Clock, Shield } from 'lucide-react';
 import { 
   generateCompanyId, 
   saveCompanyInfo, 
@@ -113,13 +113,13 @@ export default function SetupPage() {
 
   if (isComplete) {
     return (
-      <div className="min-h-screen bg-[#f8f6f3]">
+      <div className="min-h-screen bg-gray-50">
         {/* ヘッダー */}
-        <header className="bg-[#f8f6f3] border-b border-gray-200 shadow-sm">
+        <header className="bg-gray-50 border-b border-gray-200 shadow-sm">
           <div className="max-w-4xl mx-auto px-6 py-4">
             <div className="flex items-center justify-center space-x-3">
               <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center">
-                <Clock className="w-6 h-6 text-white" />
+                <Shield className="w-6 h-6 text-white" />
               </div>
               <h1 className="text-2xl font-bold text-gray-800">
                 Tick勤怠管理 - 初期設定完了
@@ -130,14 +130,14 @@ export default function SetupPage() {
 
         {/* 完了画面 */}
         <main className="max-w-4xl mx-auto px-6 py-8">
-          <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 text-center">
+          <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-200 text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
             
             <h2 className="text-2xl font-bold text-gray-800 mb-4">初期設定完了！</h2>
             
-            <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-6">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
               <p className="text-green-800 font-medium mb-2">企業情報</p>
               <p className="text-2xl font-bold text-green-800 mb-1">{companyForm.name}</p>
               <p className="text-sm text-green-600">{generatedCompanyId}</p>
@@ -150,7 +150,7 @@ export default function SetupPage() {
             
             <button
               onClick={handleStartSystem}
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-xl transition-colors duration-200"
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-md transition-colors duration-200"
             >
               運用開始
             </button>
@@ -160,19 +160,20 @@ export default function SetupPage() {
         {/* フッター */}
         <footer className="mt-12 text-center">
           <p className="text-sm text-gray-500 mb-2">© 2025 Tick勤怠管理システム</p>
+          <p className="text-sm text-gray-500">多企業対応の勤怠管理システム</p>
         </footer>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f6f3]">
+    <div className="min-h-screen bg-gray-50">
       {/* ヘッダー */}
-      <header className="bg-[#f8f6f3] border-b border-gray-200 shadow-sm">
+      <header className="bg-gray-50 border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center justify-center space-x-3">
             <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center">
-              <Clock className="w-6 h-6 text-white" />
+              <Shield className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-gray-800">
               Tick勤怠管理 - 企業情報登録
@@ -184,7 +185,7 @@ export default function SetupPage() {
       {/* メインコンテンツ */}
       <main className="max-w-4xl mx-auto px-6 py-8">
         {/* 企業情報登録 */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+        <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
           <div className="text-center mb-8">
             <Building2 className="w-16 h-16 text-green-600 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-gray-800 mb-2">企業情報登録</h2>
@@ -193,7 +194,7 @@ export default function SetupPage() {
 
           <div className="space-y-6">
             {/* 企業ID表示 */}
-            <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
               <p className="text-sm text-green-600 font-medium mb-2">生成された企業ID</p>
               <p className="text-3xl font-bold text-green-800">{generatedCompanyId}</p>
               <p className="text-sm text-green-600 mt-2">このIDは企業を識別するために使用されます</p>
@@ -209,7 +210,7 @@ export default function SetupPage() {
                 value={companyForm.name}
                 onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })}
                 placeholder="株式会社サンプル"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
             </div>
 
@@ -223,7 +224,7 @@ export default function SetupPage() {
                 value={companyForm.adminUsername}
                 onChange={(e) => setCompanyForm({ ...companyForm, adminUsername: e.target.value })}
                 placeholder="admin"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
               <p className="text-xs text-gray-500 mt-1">管理者としてログインする際に使用するID</p>
             </div>
@@ -238,7 +239,7 @@ export default function SetupPage() {
                 value={companyForm.adminPassword}
                 onChange={(e) => setCompanyForm({ ...companyForm, adminPassword: e.target.value })}
                 placeholder="パスワードを入力"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
             </div>
 
@@ -252,7 +253,7 @@ export default function SetupPage() {
                 value={companyForm.adminPasswordConfirm}
                 onChange={(e) => setCompanyForm({ ...companyForm, adminPasswordConfirm: e.target.value })}
                 placeholder="パスワードを再入力"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
             </div>
 
@@ -266,7 +267,7 @@ export default function SetupPage() {
                 value={companyForm.adminName}
                 onChange={(e) => setCompanyForm({ ...companyForm, adminName: e.target.value })}
                 placeholder="田中太郎"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
             </div>
 
@@ -274,7 +275,7 @@ export default function SetupPage() {
             <button
               onClick={handleSaveCompany}
               disabled={isSubmitting}
-              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200"
             >
               {isSubmitting ? '保存中...' : '企業情報を保存して初期設定を完了する'}
             </button>
@@ -285,6 +286,7 @@ export default function SetupPage() {
       {/* フッター */}
       <footer className="mt-12 text-center">
         <p className="text-sm text-gray-500 mb-2">© 2025 Tick勤怠管理システム</p>
+        <p className="text-sm text-gray-500">多企業対応の勤怠管理システム</p>
       </footer>
     </div>
   );
