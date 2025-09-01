@@ -793,15 +793,15 @@ export default function AdminDashboardPage() {
     <div className="min-h-screen bg-[#f8f6f3]">
       {/* ヘッダー */}
       <header className="bg-[#f8f6f3] border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center">
-                <Clock className="w-6 h-6 text-white" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-600 rounded-xl flex items-center justify-center">
+                <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-800">Tick勤怠管理</h1>
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-800">Tick勤怠管理</h1>
               {companyInfo && (
-                <div className="flex items-center space-x-4 ml-6 pl-6 border-l border-gray-300">
+                <div className="hidden lg:flex items-center space-x-4 ml-6 pl-6 border-l border-gray-300">
                   <div className="text-sm">
                     <span className="text-gray-500">企業ID:</span>
                     <span className="ml-1 font-medium text-gray-700">{companyInfo.id}</span>
@@ -813,13 +813,8 @@ export default function AdminDashboardPage() {
                 </div>
               )}
             </div>
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5z" />
-                </svg>
-              </button>
-              <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="hidden sm:flex items-center space-x-3">
                 <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                   <span className="text-sm font-medium text-gray-700">{adminUser.name?.charAt(0)}</span>
                 </div>
@@ -829,62 +824,81 @@ export default function AdminDashboardPage() {
                 onClick={handleLogout}
                 className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
           </div>
+          
+          {/* モバイル用企業情報 */}
+          {companyInfo && (
+            <div className="lg:hidden mt-3 pt-3 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-1 sm:space-y-0 text-xs sm:text-sm">
+                <div>
+                  <span className="text-gray-500">企業ID:</span>
+                  <span className="ml-1 font-medium text-gray-700">{companyInfo.id}</span>
+                </div>
+                <div>
+                  <span className="text-gray-500">会社名:</span>
+                  <span className="ml-1 font-medium text-gray-700">{companyInfo.name}</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-              </header>
+      </header>
 
         {/* タブバー */}
         <div className="bg-white border-b border-gray-200 shadow-sm">
-          <div className="max-w-7xl mx-auto px-6">
-            <nav className="flex space-x-8 overflow-x-auto">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <nav className="flex space-x-4 sm:space-x-8 overflow-x-auto scrollbar-hide">
               <button
                 onClick={() => setActiveTab('employees')}
-                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                className={`flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
                   activeTab === 'employees'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <Users className="w-4 h-4" />
-                <span>社員管理</span>
+                <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline">社員管理</span>
+                <span className="xs:hidden">社員</span>
               </button>
               <button
                 onClick={() => setActiveTab('attendance')}
-                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                className={`flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
                   activeTab === 'attendance'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <Calendar className="w-4 h-4" />
-                <span>勤怠管理</span>
+                <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline">勤怠管理</span>
+                <span className="xs:hidden">勤怠</span>
               </button>
               <button
                 onClick={() => setActiveTab('salary')}
-                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                className={`flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
                   activeTab === 'salary'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <FileSpreadsheet className="w-4 h-4" />
-                <span>給与テンプレート</span>
+                <FileSpreadsheet className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline">給与テンプレート</span>
+                <span className="xs:hidden">給与</span>
               </button>
               <button
                 onClick={() => setActiveTab('terminal')}
-                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                className={`flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
                   activeTab === 'terminal'
                     ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <Clock className="w-4 h-4" />
-                <span>共有端末</span>
+                <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline">共有端末</span>
+                <span className="xs:hidden">端末</span>
               </button>
-
             </nav>
           </div>
         </div>
@@ -1194,9 +1208,9 @@ export default function AdminDashboardPage() {
 
       {/* 従業員追加モーダル */}
       {showAddEmployeeModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-8 max-w-md mx-4 w-full">
-            <h3 className="text-xl font-bold text-slate-800 mb-6 text-center">従業員追加</h3>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-800 mb-4 sm:mb-6 text-center">従業員追加</h3>
             
             <div className="space-y-4">
               <div>
@@ -1253,7 +1267,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="flex space-x-3 mt-6">
+            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 mt-6">
               <button
                 onClick={() => {
                   setShowAddEmployeeModal(false);

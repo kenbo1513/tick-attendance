@@ -241,22 +241,23 @@ export default function MainPage() {
     <div className="min-h-screen bg-[#f8f6f3]">
       {/* ヘッダー */}
       <header className="bg-[#f8f6f3] border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center">
-                <Clock className="w-6 h-6 text-white" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-600 rounded-xl flex items-center justify-center">
+                <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-800">Tick勤怠管理</h1>
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-800">Tick勤怠管理</h1>
             </div>
 
             {/* 管理者ログインボタン */}
             <a 
               href="/login" 
-              className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <Shield className="w-5 h-5" />
-              <span className="text-sm">管理者ログイン</span>
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-xs sm:text-sm hidden xs:inline">管理者ログイン</span>
+              <span className="text-xs sm:text-sm xs:hidden">ログイン</span>
             </a>
           </div>
         </div>
