@@ -24,11 +24,18 @@ import {
   X
 } from 'lucide-react';
 import { 
-  ApprovalRequest, 
   TimeCorrectionRequest, 
   LeaveRequest,
-  Employee 
-} from '@/app/lib/localStorage';
+  Employee,
+  DisplayApprovalRequest,
+  TabType,
+  SortField,
+  SortDirection,
+  BulkActionType,
+  BulkProcessResult,
+  PriorityDisplay,
+  StatusDisplay
+} from '@/app/lib/types';
 import { format, parseISO, differenceInDays } from 'date-fns';
 import { ja } from 'date-fns/locale';
 
@@ -40,18 +47,7 @@ interface ApprovalDashboardProps {
   onReject: (requestId: string, reason: string) => void;
   onBulkApprove: (requestIds: string[], reason: string) => void;
   onBulkReject: (requestIds: string[], reason: string) => void;
-  onStartBulkApproval: (requests: ApprovalRequest[]) => void;
-}
-
-type TabType = 'timeCorrection' | 'leaveRequest';
-type SortField = 'submittedAt' | 'priority' | 'employeeName' | 'requestType';
-type SortDirection = 'asc' | 'desc';
-type BulkActionType = 'approve' | 'reject';
-
-interface BulkProcessResult {
-  success: string[];
-  failed: string[];
-  total: number;
+  onStartBulkApproval: (requests: DisplayApprovalRequest[]) => void;
 }
 
 export default function ApprovalDashboard({
@@ -98,7 +94,7 @@ export default function ApprovalDashboard({
   }, [timeCorrectionRequests, leaveRequests]);
 
   // 申請の表示用データ
-  const getDisplayData = () => {
+  const getDisplayData = (): DisplayApprovalRequest[] => {
     if (activeTab === 'timeCorrection') {
       return timeCorrectionRequests.map(request => ({
         ...request,
@@ -128,7 +124,7 @@ export default function ApprovalDashboard({
   };
 
   // 優先度の判定と表示
-  const getPriorityDisplay = (submittedAt: string, status: string) => {
+  const getPriorityDisplay = (submittedAt: string, status: string): PriorityDisplay => {
     if (status !== 'pending') {
       return { priority: 'low', label: '⚪ 低', color: 'text-gray-500', value: 0 };
     }
@@ -145,7 +141,7 @@ export default function ApprovalDashboard({
   };
 
   // ステータスの色とアイコン（強化版）
-  const getStatusDisplay = (status: string) => {
+  const getStatusDisplay = (status: string): StatusDisplay => {
     switch (status) {
       case 'pending':
         return {
